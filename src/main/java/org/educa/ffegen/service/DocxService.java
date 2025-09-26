@@ -6,6 +6,7 @@ import org.educa.ffegen.enums.ExcelDataEnum;
 import org.educa.ffegen.enums.ExtraDataEnum;
 import org.educa.ffegen.generator.DocxGenerator;
 import org.educa.ffegen.generator.DocxPoiGenerator;
+import org.educa.ffegen.helper.SanitizerHelper;
 
 import java.io.File;
 import java.nio.file.FileSystems;
@@ -63,8 +64,9 @@ public class DocxService {
             );
 
             var template = getClass().getResourceAsStream("/templates/relacion_alumnos.docx");
-            File newFolder = new File(folder.getAbsolutePath() + FileSystems.getDefault().getSeparator()
-                    + data.getEmpresa());
+            String folderPath = folder.getAbsolutePath() + FileSystems.getDefault().getSeparator()
+                    + SanitizerHelper.sanitize(data.getEmpresa());
+            File newFolder = new File(folderPath);
             newFolder.mkdirs();
             File out = new File(newFolder, "RELA_"
                     + data.getNumeroRelacionAlumno() + EXTENSION_DOCX);
@@ -94,8 +96,10 @@ public class DocxService {
             var template = getClass().getResourceAsStream("/templates/ficha_de_seguimiento_periodico.docx");
             String apellidosNombre = data.getAlumnadoApellidosNombre().replace(",", "")
                     .replace(" ", "_");
-            File newFolder = new File(folder.getAbsolutePath() + FileSystems.getDefault().getSeparator()
-                    + data.getEmpresa() + FileSystems.getDefault().getSeparator() + apellidosNombre);
+            String folderPath = folder.getAbsolutePath() + FileSystems.getDefault().getSeparator()
+                    + SanitizerHelper.sanitize(data.getEmpresa()) + FileSystems.getDefault().getSeparator()
+                    + SanitizerHelper.sanitize(apellidosNombre);
+            File newFolder = new File(folderPath);
             newFolder.mkdirs();
             File out = new File(newFolder, "SEGP_" + apellidosNombre + EXTENSION_DOCX);
 
@@ -142,8 +146,10 @@ public class DocxService {
             var template = getClass().getResourceAsStream("/templates/plan_formacion.docx");
             String apellidosNombre = data.getAlumnadoApellidosNombre().replace(",", "")
                     .replace(" ", "_");
-            File newFolder = new File(folder.getAbsolutePath() + FileSystems.getDefault().getSeparator()
-                    + data.getEmpresa() + FileSystems.getDefault().getSeparator() + apellidosNombre);
+            String folderPath = folder.getAbsolutePath() + FileSystems.getDefault().getSeparator()
+                    + SanitizerHelper.sanitize(data.getEmpresa()) + FileSystems.getDefault().getSeparator()
+                    + SanitizerHelper.sanitize(apellidosNombre);
+            File newFolder = new File(folderPath);
             newFolder.mkdirs();
             File out = new File(newFolder, "PLFO_" + apellidosNombre + EXTENSION_DOCX);
 
@@ -177,8 +183,10 @@ public class DocxService {
             var template = getClass().getResourceAsStream("/templates/valoracion_final_del_tutor_de_la_empresa.docx");
             String apellidosNombre = data.getAlumnadoApellidosNombre().replace(",", "")
                     .replace(" ", "_");
-            File newFolder = new File(folder.getAbsolutePath() + FileSystems.getDefault().getSeparator()
-                    + data.getEmpresa() + FileSystems.getDefault().getSeparator() + apellidosNombre);
+            String folderPath = folder.getAbsolutePath() + FileSystems.getDefault().getSeparator()
+                    + SanitizerHelper.sanitize(data.getEmpresa()) + FileSystems.getDefault().getSeparator()
+                    + SanitizerHelper.sanitize(apellidosNombre);
+            File newFolder = new File(folderPath);
             newFolder.mkdirs();
             File out = new File(newFolder, "VALO_" + apellidosNombre + EXTENSION_DOCX);
 

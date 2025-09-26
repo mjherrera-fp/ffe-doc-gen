@@ -219,7 +219,7 @@ public class DocxPoiGenerator implements DocxGenerator {
 
             if (tableRA != null) {
                 XWPFTable table = doc.getTables().get(tableRA.getNumTableInDoc());
-                System.out.println("Tabla: " + table.getRow(0).getCell(0).getText());
+                //System.out.println("Tabla: " + table.getRow(0).getCell(0).getText());
                 for (int i = 0; i < tableRA.getExcelRA().size(); i++) {
                     RAData raData = tableRA.getExcelRA().get(i);
                     XWPFTableRow row = table.getRow(i + 2);
