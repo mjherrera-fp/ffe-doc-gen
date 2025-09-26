@@ -22,13 +22,13 @@ public class DocxService {
         Map<String, List<ExcelData>> groupByEmp = new HashMap<>();
         for (RowData row : seleccionados) {
             ExcelData data = row.getExcelData();
-            if (data.getEmpresaTutorNif() != null && !data.getEmpresaTutorNif().isEmpty()) {
-                if (groupByEmp.containsKey(data.getEmpresaCif())) {
-                    groupByEmp.get(data.getEmpresaCif()).add(data);
+            if (data.getEmpresa() != null && !data.getEmpresa().isEmpty()) {
+                if (groupByEmp.containsKey(data.getEmpresa())) {
+                    groupByEmp.get(data.getEmpresa()).add(data);
                 } else {
                     List<ExcelData> dataForEmp = new ArrayList<>();
                     dataForEmp.add(data);
-                    groupByEmp.put(data.getEmpresaCif(), dataForEmp);
+                    groupByEmp.put(data.getEmpresa(), dataForEmp);
                 }
             }
         }
