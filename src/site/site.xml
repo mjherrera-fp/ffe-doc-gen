@@ -1,0 +1,14 @@
+<project name="FFE Doc Gen">
+    <skin>
+        <groupId>${site.skin.groupId}</groupId>
+        <artifactId>${site.skin.artifactId}</artifactId>
+        <version>${site.skin.version}</version>
+    </skin>
+    <body>
+        <menu name="Documentación">
+            <item name="Inicio" href="readme.html"/>
+            <item name="Dependencias" href="dependencies.html"/>
+            <item name="Información del proyecto" href="project-info.html"/>
+        </menu>
+    </body>
+</project>

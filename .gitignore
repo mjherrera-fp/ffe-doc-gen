@@ -1,5 +1,6 @@
 target/
 runtime/
+src/site/markdown
 .mvn/
 !**/src/main/**/target/
 !**/src/test/**/target/

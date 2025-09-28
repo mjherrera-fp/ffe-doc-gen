@@ -5,7 +5,7 @@ echo ================================
 
 echo.
 echo [1/3] Limpiando y compilando...
-call mvn clean package -q
+call mvn clean package site -q
 if errorlevel 1 (
     echo Error en la compilacion
     pause
@@ -41,6 +41,7 @@ echo [3/3] ¡Construccion completada!
 
 echo [Extra] Copiando recursos adicionales...
 xcopy /E /I /Y target\classes\data dist\FFE-Doc-Gen\data
+xcopy /E /I /Y target\site dist\FFE-Doc-Gen\doc
 
 if errorlevel 1 (
     echo Error copiando recursos
