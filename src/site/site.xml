@@ -6,7 +6,7 @@
     </skin>
     <body>
         <menu name="Documentación">
-            <item name="Inicio" href="readme.html"/>
+            <item name="Inicio" href="index.html"/>
             <item name="Dependencias" href="dependencies.html"/>
             <item name="Información del proyecto" href="project-info.html"/>
         </menu>
