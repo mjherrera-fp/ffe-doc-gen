@@ -2,16 +2,60 @@
 
 FFE-doc-gen es un proyecto para agilizar la documentación necesaria a enviar a la comunidad de Madrid para la realización de la fase de formación en empresa para el alumnado de formación profesional.
 
+## ⚠️ Descargo de responsabilidad
+
+El **desarrollador** de esta aplicación **no se hace responsable** de ningún daño, pérdida o perjuicio que pueda derivarse del uso indebido, inapropiado o incorrecto de la aplicación. **El uso de esta aplicación es bajo su propio riesgo.**
+
+**No garantizamos que la aplicación funcione sin errores**, interrupciones o fallos, **ni que los resultados obtenidos sean precisos o completos**. La aplicación se proporciona "tal cual" y "según disponibilidad", sin ninguna garantía expresa o implícita de ningún tipo.
+
+**Al utilizar esta aplicación, usted acepta que el desarrollador no será responsable** de ningún daño directo, indirecto, incidental, especial o consecuente que pueda surgir del uso o mal funcionamiento de la aplicación.
+
 ## 📋 Requisitos
 Para la ejecución de FFE Doc Gen.exe:
- - Windows
- - Java 21
+ - Windows. La aplicación se distribuye como un .exe, ejecutable en Widnows
+ - Java. Tener java instalado. Se puede comprar ejecutando en el cmd:
+`java -version`
 
 ## 📏 Limitaciones
 La versión de este proyecto es preliminar, y está en fase de pruebas.
 Tanto el **Excel** como **el propio programa** tienen funciones que **han sido probada de forma MUY limitada**. Si va a usar este programa **asegúrese de que los datos generados** con el mismo **son correctos**.
 
 La versión 1.0-alpha está limitada a máximo **20 Resultados de Aprendizaje**
+
+## 🖥️ Acceso a la aplicación
+La aplicación FFE Doc Gen, no necesita instalación, simplemete descomprimir y ejecutar.
+
+Para hacer uso de la aplicación sigue los siguientes pasos:
+1. Accede a la última versión disponible en https://github.com/mjherrera-fp/ffe-doc-gen/releases/latest. 
+2. Descarga el zip que tiene el nombre del aplicativo `FFE-Doc-Gen-<version>.zip`
+3. Descomprimelo en la ruta que desees
+4. Ejecuta FFE-Doc-Gen.exe
+5. Enjoy!
+
+## 🚀 Uso de la aplicación
+Junto con la aplicación se incluye, en la carpeta data, el fichero Excel FFE-Datos.xlsx, este fichero es un fichero que contiene la información para el seguimiento de las FFE, en dicho fichero podrá encontrar diferentes pestañas con información que se usa tanto para generar los documentos como para hacer un seguimiento de la FFE.
+
+> ⚠️ **Nota importante**: NO modifique el orden de las oclumnas de las tablas del Excel, ni añada columnas entre las columnas existentes. 
+> Si desea añadir alguna coumna, hágalo siempre al final de la tabla.
+
+En la sección [Campos del Excel](#campos-del-excel), podrá encontrar información detallada para cada columna del Excel.
+
+Una vez se ejecute la aplicación, aparecerá la pantalla de selección de fichero, en ella deberá seleccionar el Excel con la información de los alumnos/as:
+![img.png](images/screen1.png)
+
+Una vez seleccionado el fichero pulse en importar. En la pantalla de selección de alumnos, podrá seleccionar los alumnos/as a los que quiera genera la documentación.
+![img.png](images/screen2.png)
+En esta pantalla podrá:
+1. Buscar por Nombre, apellidos del alumno/a, NIF o empresa.
+2. Seleccionar discriminadamente a los alumnos/as.
+3. Seleccionar o deseleccionar a todos los alumnos/as.
+
+> ⚠️ **Nota importante**: Solo es posible seleccionar alumnos/as que tengan informado el campo empresa en el Excel
+
+Si pulsamos en cancelar, volveremos a la pantalla de selección de ficheros, si pulsamos en Siguiente, accederemos a la pantalla de selección de documentos.
+![img.png](images/screen3.png)
+
+Esta documentación la podrá encontrar en la carpeta doc de la distribución.
 
 ## 📊 Campos del Excel
 A continuación se describe los campos del Excel que alimenta la aplicación JavaFX para la generación de la documentación oficial de la Fase de Formación en Empresa (FFE) en la Comunidad de Madrid.
