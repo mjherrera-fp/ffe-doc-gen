@@ -32,6 +32,8 @@ Para hacer uso de la aplicación sigue los siguientes pasos:
 4. Ejecuta FFE-Doc-Gen.exe
 5. Enjoy!
 
+> Esta documentación la podrá encontrar en la carpeta doc de la distribución.
+
 ## 🚀 Uso de la aplicación
 Junto con la aplicación se incluye, en la carpeta data, el fichero Excel FFE-Datos.xlsx, este fichero es un fichero que contiene la información para el seguimiento de las FFE, en dicho fichero podrá encontrar diferentes pestañas con información que se usa tanto para generar los documentos como para hacer un seguimiento de la FFE.
 
@@ -54,8 +56,6 @@ En esta pantalla podrá:
 
 Si pulsamos en cancelar, volveremos a la pantalla de selección de ficheros, si pulsamos en Siguiente, accederemos a la pantalla de selección de documentos.
 ![img.png](images/screen3.png)
-
-Esta documentación la podrá encontrar en la carpeta doc de la distribución.
 
 ## 📊 Campos del Excel
 A continuación se describe los campos del Excel que alimenta la aplicación JavaFX para la generación de la documentación oficial de la Fase de Formación en Empresa (FFE) en la Comunidad de Madrid.
