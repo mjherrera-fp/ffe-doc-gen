@@ -39,7 +39,7 @@ echo.
 echo [3/3] ¡Construccion completada!
 
 
-echo [4/3] Copiando recursos adicionales...
+echo [Extra] Copiando recursos adicionales...
 xcopy /E /I /Y target\classes\data dist\FFE-Doc-Gen\data
 
 if errorlevel 1 (
