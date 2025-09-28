@@ -13,7 +13,7 @@ El **desarrollador** de esta aplicación **no se hace responsable** de ningún d
 ## 📋 Requisitos
 Para la ejecución de FFE Doc Gen.exe:
  - Windows. La aplicación se distribuye como un .exe, ejecutable en Widnows
- - Java. Tener java instalado. Se puede comprar ejecutando en el cmd:
+ - Java. Tener java instalado. Se puede comprobar ejecutando en el cmd:
 `java -version`
 
 ## 📏 Limitaciones
