@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9fb813ac-df08-48cb-a7f9-832aefa722dc" name="Changes" comment="Se comente un log&#10;Se Sanitiza los nombres que van a incluirse en los paths">
+    <list default="true" id="9fb813ac-df08-48cb-a7f9-832aefa722dc" name="Changes" comment="Se añade información al README.md">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
@@ -39,26 +39,26 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;SONARLINT_PRECOMMIT_ANALYSIS&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Desarrollo/Docencia/Proyecto/FFE/ffe-doc-gen/src/main/resources/data&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Problems&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;org.jetbrains.plugins.github.ui.GithubSettingsConfigurable&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "SONARLINT_PRECOMMIT_ANALYSIS": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "last_opened_file_path": "C:/Desarrollo/Docencia/Proyecto/FFE/ffe-doc-gen/src/main/resources/data",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Problems",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Desarrollo\Docencia\Proyecto\FFE\ffe-doc-gen\src\main\resources\data" />
@@ -157,7 +157,8 @@
       <workItem from="1758897659582" duration="12106000" />
       <workItem from="1758912149483" duration="1030000" />
       <workItem from="1758924294571" duration="2575000" />
-      <workItem from="1758960237676" duration="3240000" />
+      <workItem from="1758960237676" duration="3351000" />
+      <workItem from="1759046786613" duration="2708000" />
     </task>
     <task id="LOCAL-00001" summary="Modificación del Excel para obtener los dias festivos para el calculo de la fecha de fin, dependiendo de la ciudad.&#10;&#10;Se ha añadido un campo ciudad, por lo que se ha tocado los índices del ExcelDataEnum.java&#10;&#10;Se ha corregido incidencia en DocsService, se miraba el NifDelTutor en lugar del campo CIF empresa, a la hora de crear el mapa.">
       <option name="closed" value="true" />
@@ -175,7 +176,15 @@
       <option name="project" value="LOCAL" />
       <updated>1758926758952</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Se añade información al README.md">
+      <option name="closed" value="true" />
+      <created>1758963869892</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1758963869892</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -184,6 +193,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Modificación del Excel para obtener los dias festivos para el calculo de la fecha de fin, dependiendo de la ciudad.&#10;&#10;Se ha añadido un campo ciudad, por lo que se ha tocado los índices del ExcelDataEnum.java&#10;&#10;Se ha corregido incidencia en DocsService, se miraba el NifDelTutor en lugar del campo CIF empresa, a la hora de crear el mapa." />
     <MESSAGE value="Se comente un log&#10;Se Sanitiza los nombres que van a incluirse en los paths" />
-    <option name="LAST_COMMIT_MESSAGE" value="Se comente un log&#10;Se Sanitiza los nombres que van a incluirse en los paths" />
+    <MESSAGE value="Se añade información al README.md" />
+    <option name="LAST_COMMIT_MESSAGE" value="Se añade información al README.md" />
   </component>
 </project>
