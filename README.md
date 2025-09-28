@@ -8,6 +8,9 @@ Para la ejecución de FFE Doc Gen.exe:
  - Java 21
 
 ## 📏 Limitaciones
+La versión de este proyecto es preliminar, y está en fase de pruebas.
+Tanto el **Excel** como **el propio programa** tienen funciones que **han sido probada de forma MUY limitada**. Si va a usar este programa **asegúrese de que los datos generados** con el mismo **son correctos**.
+
 La versión 1.0-alpha está limitada a máximo **20 Resultados de Aprendizaje**
 
 ## 📊 Campos del Excel
