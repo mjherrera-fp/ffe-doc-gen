@@ -48,7 +48,7 @@
               <goal>copy-resources</goal>
             </goals>
             <configuration>
-              <outputDirectory>${project.build.directory}/site/markdown</outputDirectory>
+              <outputDirectory>${basedir}/src/site/markdown</outputDirectory>
               <resources>
                 <resource>
                   <directory>${basedir}</directory>
