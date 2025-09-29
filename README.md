@@ -1,6 +1,6 @@
 # Generador de documentos para las FFE
 
-FFE-doc-gen es un proyecto para agilizar la documentación necesaria a enviar a la comunidad de Madrid para la realización de la fase de formación en empresa para el alumnado de formación profesional.
+FFE-doc-gen es un proyecto para agilizar la documentación necesaria que se ha de enviar a la comunidad de Madrid para la realización de la fase de formación en empresa para el alumnado de formación profesional.
 
 ## ⚠️ Descargo de responsabilidad
 
@@ -11,19 +11,19 @@ El **desarrollador** de esta aplicación **no se hace responsable** de ningún d
 **Al utilizar esta aplicación, usted acepta que el desarrollador no será responsable** de ningún daño directo, indirecto, incidental, especial o consecuente que pueda surgir del uso o mal funcionamiento de la aplicación.
 
 ## 🏷️ Versiones
-- Versión v0.1.0-alpha. Versión incial de la aplicación. Funcionalidad probada de forma limitada.
+- Versión v0.1.0-alpha. Versión inicial de la aplicación. Funcionalidad probada de forma limitada.
   - Generación de documentación para las FFE.
   - Selección de alumnos.
 
 ## 📋 Requisitos
 Para la ejecución de FFE Doc Gen.exe:
  - Windows. La aplicación se distribuye como un .exe, ejecutable en Widnows
- - Java. Tener java instalado. Se puede comprobar ejecutando en el cmd:
+ - Java. Tener Java instalado. Se puede comprobar ejecutando en el cmd:
 `java -version`
 
 ## 📏 Limitaciones
 La versión de este proyecto es preliminar, y está en fase de pruebas.
-Tanto el **Excel** como **el propio programa** tienen funciones que **han sido probada de forma MUY limitada**. Si va a usar este programa **asegúrese de que los datos generados** con el mismo **son correctos**.
+Tanto el **Excel** como **el propio programa** tienen funciones que **han sido probadas de forma MUY limitada**. Si va a usar este programa **asegúrese de que los datos generados** con el mismo **son correctos**.
 
 > Esta versión está limitada a máximo **20 Resultados de Aprendizaje**
 
