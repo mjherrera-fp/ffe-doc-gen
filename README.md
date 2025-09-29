@@ -10,6 +10,11 @@ El **desarrollador** de esta aplicación **no se hace responsable** de ningún d
 
 **Al utilizar esta aplicación, usted acepta que el desarrollador no será responsable** de ningún daño directo, indirecto, incidental, especial o consecuente que pueda surgir del uso o mal funcionamiento de la aplicación.
 
+## 🏷️ Versiones
+- Versión v0.1.0-alpha. Versión incial de la aplicación. Funcionalidad probada de forma limitada.
+  - Generación de documentación para las FFE.
+  - Selección de alumnos.
+
 ## 📋 Requisitos
 Para la ejecución de FFE Doc Gen.exe:
  - Windows. La aplicación se distribuye como un .exe, ejecutable en Widnows
