@@ -22,7 +22,7 @@ import java.util.Map;
 public class DocxPoiGenerator implements DocxGenerator {
 
     private static final String COLOR_BLACK = "000000";
-    private static final int MAX_RA = 20;
+    private static final int MAX_RA = 30;
 
     @Override
     public void generateForSeguimiento(InputStream templateStream,
