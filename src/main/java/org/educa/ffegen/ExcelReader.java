@@ -12,10 +12,9 @@ import org.educa.ffegen.enums.RADataEnum;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.*;
 
 public class ExcelReader {
 
@@ -42,6 +41,7 @@ public class ExcelReader {
                 excelData.setAlumnadoFechaNacimiento(getDateValue(row.getCell(ExcelDataEnum.ALUMNADO_FECHA_NACIMIENTO.getExcelPosition()), df, evaluator));
                 excelData.setEmpresa(df.formatCellValue(row.getCell(ExcelDataEnum.EMPRESA.getExcelPosition())));
                 excelData.setEmpresaDireccion(df.formatCellValue(row.getCell(ExcelDataEnum.EMPRESA_DIRECCION.getExcelPosition())));
+                excelData.setEmpresaCiudad(df.formatCellValue(row.getCell(ExcelDataEnum.EMPRESA_CIUDAD.getExcelPosition())));
                 excelData.setEmpresaCif(df.formatCellValue(row.getCell(ExcelDataEnum.EMPRESA_CIF.getExcelPosition())));
                 excelData.setEmpresaEmail(df.formatCellValue(row.getCell(ExcelDataEnum.EMPRESA_EMAIL.getExcelPosition())));
                 excelData.setEmpresaTelefono(df.formatCellValue(row.getCell(ExcelDataEnum.EMPRESA_TELEFONO.getExcelPosition())));
@@ -87,6 +87,8 @@ public class ExcelReader {
                 raData.setModulo(df.formatCellValue(row.getCell(RADataEnum.MODULO.getExcelPosition()), evaluator));
                 raData.setCodigo(df.formatCellValue(row.getCell(RADataEnum.CODIGO.getExcelPosition())));
                 raData.setRa(df.formatCellValue(row.getCell(RADataEnum.RA.getExcelPosition())));
+                raData.setNombreRA(df.formatCellValue(row.getCell(RADataEnum.NOMBRE_RA.getExcelPosition())));
+                raData.setContenidos(df.formatCellValue(row.getCell(RADataEnum.CONTENIDOS.getExcelPosition())));
                 raData.setCompleto(Boolean.valueOf(df.formatCellValue(row.getCell(RADataEnum.COMPLETO.getExcelPosition()))));
 
                 if (raData.getModulo() != null && !raData.getModulo().isBlank()) {
@@ -114,6 +116,7 @@ public class ExcelReader {
             extraData.setTelefonoTutor(df.formatCellValue(row.getCell(4)));
             extraData.setCurso(df.formatCellValue(row.getCell(ExtraDataEnum.CURSO.getExcelPosition())));
             extraData.setCentro(df.formatCellValue(row.getCell(ExtraDataEnum.CENTRO.getExcelPosition())));
+            extraData.setCiudad(df.formatCellValue(row.getCell(ExtraDataEnum.CENTRO_CIUDAD.getExcelPosition())));
             extraData.setTelefonoCentro(df.formatCellValue(row.getCell(ExtraDataEnum.CENTRO_TELEFONO.getExcelPosition())));
             extraData.setEmailCentro(df.formatCellValue(row.getCell(ExtraDataEnum.CENTRO_EMAIL.getExcelPosition())));
             extraData.setCiclo(df.formatCellValue(row.getCell(ExtraDataEnum.CICLO.getExcelPosition())));
@@ -125,6 +128,69 @@ public class ExcelReader {
 
             return extraData;
         }
+    }
+
+    public Map<String, List<LocalDate>> readHolidayDataFromExcel(String path) throws Exception {
+        Map<String, List<LocalDate>> holidays = new HashMap<>();
+
+        try (FileInputStream fis = new FileInputStream(path);
+             Workbook workbook = new XSSFWorkbook(fis)) {
+
+            Sheet sheet = workbook.getSheetAt(3);
+            Row headerRow = sheet.getRow(0);
+
+            // Buscar columna por nombre de ciudad
+            for (Cell headerCell : headerRow) {
+                String ciudad = headerCell.getStringCellValue();
+                List<LocalDate> holidayList = new ArrayList<>();
+                // Recorrer filas y obtener fechas
+                Iterator<Row> rowIterator = sheet.iterator();
+                rowIterator.next(); // saltar cabecera
+
+                while (rowIterator.hasNext()) {
+                    Row row = rowIterator.next();
+                    Cell cell = row.getCell(headerCell.getColumnIndex());
+                    if (cell != null && cell.getCellType() == CellType.NUMERIC && DateUtil.isCellDateFormatted(cell)) {
+                        LocalDate date = cell.getDateCellValue().toInstant()
+                                .atZone(ZoneId.systemDefault())
+                                .toLocalDate();
+                        holidayList.add(date);
+                    }
+                }
+                holidays.put(ciudad, holidayList);
+
+            }
+        }
+
+        return holidays;
+    }
+
+    public List<LocalDate> readTutoriaDataFromExcel(String path) throws Exception {
+        List<LocalDate> dates = new ArrayList<>();
+
+        try (FileInputStream fis = new FileInputStream(path);
+             Workbook workbook = new XSSFWorkbook(fis)) {
+
+            Sheet sheet = workbook.getSheetAt(4); // primera hoja
+
+            // Recorrer filas y obtener fechas
+            Iterator<Row> rowIterator = sheet.iterator();
+            rowIterator.next(); // saltar cabecera
+
+            while (rowIterator.hasNext()) {
+                Row row = rowIterator.next();
+                Cell cell = row.getCell(0);
+                if (cell != null && cell.getCellType() == CellType.NUMERIC && DateUtil.isCellDateFormatted(cell)) {
+                    LocalDate date = cell.getDateCellValue().toInstant()
+                            .atZone(ZoneId.systemDefault())
+                            .toLocalDate();
+                    dates.add(date);
+                }
+            }
+
+        }
+
+        return dates;
     }
 
     private String getDateValue(Cell cell, DataFormatter df, FormulaEvaluator evaluator) {

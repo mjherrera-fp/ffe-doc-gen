@@ -5,7 +5,9 @@ public enum RADataEnum {
     MODULO( 0),
     CODIGO( 1),
     RA( 2),
-    COMPLETO( 3);
+    NOMBRE_RA( 3),
+    CONTENIDOS( 4),
+    COMPLETO( 5);
 
     private final int excelPosition;
 

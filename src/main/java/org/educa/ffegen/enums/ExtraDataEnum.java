@@ -11,14 +11,15 @@ public enum ExtraDataEnum {
     TUTOR_TELEFONO( 4),
     CURSO( 5),
     CENTRO( 6),
-    CENTRO_TELEFONO( 7),
-    CENTRO_EMAIL( 8),
-    CICLO( 9),
-    CICLO_CODIGO( 10),
-    NIVEL( 11),
-    GRADO( 12),
-    REGIMEN( 13),
-    GRUPO_CODIGO( 14);
+    CENTRO_CIUDAD( 7),
+    CENTRO_TELEFONO( 8),
+    CENTRO_EMAIL( 9),
+    CICLO( 10),
+    CICLO_CODIGO( 11),
+    NIVEL( 12),
+    GRADO( 13),
+    REGIMEN( 14),
+    GRUPO_CODIGO( 15);
 
     private final int excelPosition;
 

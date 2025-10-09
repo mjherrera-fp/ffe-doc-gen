@@ -13,15 +13,16 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.educa.ffegen.ExcelReader;
-import org.educa.ffegen.entity.ExcelData;
-import org.educa.ffegen.entity.ExtraData;
-import org.educa.ffegen.entity.RAData;
-import org.educa.ffegen.entity.RowData;
+import org.educa.ffegen.entity.*;
 import org.educa.ffegen.service.DocxService;
+import org.educa.ffegen.service.PdfService;
 
 import java.io.File;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class WizardController {
     private static final String BTN_CANCELAR = "Cancelar";
@@ -30,6 +31,8 @@ public class WizardController {
     private List<ExcelData> excelData = new ArrayList<>();
     private List<RAData> excelRA = new ArrayList<>();
     private ExtraData extraData = new ExtraData();
+    private Map<String, List<LocalDate>> holidayData = new HashMap<>();
+    private List<LocalDate> tutoriaData = new ArrayList<>();
     private List<RowData> seleccionados = new ArrayList<>();
     private ObservableList<RowData> masterData;
     private FilteredList<RowData> filteredData;
@@ -39,6 +42,7 @@ public class WizardController {
     private boolean filtroSoloConEmpresa = false;
 
     private final DocxService docxService = new DocxService();
+    private final PdfService pdfService = new PdfService();
 
     public WizardController(Stage s) {
         stage = s;
@@ -86,6 +90,8 @@ public class WizardController {
                 excelData = excelReader.readDataFromExcel(tfExcel.getText());
                 excelRA = excelReader.readRAFromExcel(tfExcel.getText());
                 extraData = excelReader.readExtraDataFromExcel(tfExcel.getText());
+                holidayData = excelReader.readHolidayDataFromExcel(tfExcel.getText());
+                tutoriaData = excelReader.readTutoriaDataFromExcel(tfExcel.getText());
 
                 if (excelData.isEmpty()) alert("Fichero SIN alumnos");
                 else showPantalla2();
@@ -252,11 +258,19 @@ public class WizardController {
         Label resumen = new Label("Se van a generar documentos para " + seleccionados.size() + " alumnos.");
 
         CheckBox cbRelacion = new CheckBox("Relación de alumnos");
-        CheckBox cbFichaSeguimiento = new CheckBox("Ficha de seguimiento");
         CheckBox cbPlanFormativo = new CheckBox("Plan de formación");
-        CheckBox cbValoracionFinal = new CheckBox("Valoración final del tutor de la empresa");
 
-        List<CheckBox> checkBoxes = List.of(cbRelacion, cbFichaSeguimiento, cbPlanFormativo, cbValoracionFinal);
+        CheckBox cbFichaSeguimiento = new CheckBox("Ficha de seguimiento");
+        CheckBox cbValoracionFinal = new CheckBox("Valoración final del tutor de la empresa");
+        CheckBox cbCalendario = new CheckBox("Calendario FFE");
+        CheckBox cbCarta = new CheckBox("Carta a la empresa");
+        CheckBox cbWelcomePack = new CheckBox("Welcome Pack");
+
+        // VBox "indentado" para mostrar los hijos del Welcome Pack
+        VBox wpChildrenBox = new VBox(8, cbFichaSeguimiento, cbValoracionFinal, cbCalendario, cbCarta);
+        wpChildrenBox.setPadding(new Insets(0, 0, 0, 24)); // Sangría visual (izquierda)
+
+        List<CheckBox> checkBoxes = List.of(cbRelacion, cbPlanFormativo, cbWelcomePack);
 
         Button btnSelAll = new Button("Seleccionar todo");
         btnSelAll.setOnAction(e -> checkBoxes.forEach(cb -> {
@@ -268,10 +282,39 @@ public class WizardController {
             cb.setSelected(false);
         }));
 
+        // --- Lógica de "Welcome Pack" ---
+        cbWelcomePack.selectedProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal) {
+                // Si se selecciona el Welcome Pack:
+                cbFichaSeguimiento.setSelected(true);
+                cbValoracionFinal.setSelected(true);
+                cbCalendario.setSelected(true);
+                cbCarta.setSelected(true);
+
+                // Se deshabilitan para que no puedan cambiarse
+                cbFichaSeguimiento.setDisable(true);
+                cbValoracionFinal.setDisable(true);
+                cbCalendario.setDisable(true);
+                cbCarta.setDisable(true);
+            } else {
+                // Si se desmarca el Welcome Pack:
+                cbFichaSeguimiento.setSelected(false);
+                cbValoracionFinal.setSelected(false);
+                cbCalendario.setSelected(false);
+                cbCarta.setSelected(false);
+
+                cbFichaSeguimiento.setDisable(false);
+                cbValoracionFinal.setDisable(false);
+                cbCalendario.setDisable(false);
+                cbCarta.setDisable(false);
+            }
+        });
+
         Button btnGen = new Button("Generar documentos");
         btnGen.setOnAction(e -> {
-            if (!cbRelacion.isSelected() && !cbFichaSeguimiento.isSelected()
-                    && !cbPlanFormativo.isSelected() && !cbValoracionFinal.isSelected()) {
+            if (!cbRelacion.isSelected() && !cbPlanFormativo.isSelected()
+                    && !cbFichaSeguimiento.isSelected() && !cbValoracionFinal.isSelected()
+                    && !cbCalendario.isSelected() && !cbCarta.isSelected()) {
                 alert("Selecciona al menos un tipo");
                 return;
             }
@@ -287,16 +330,24 @@ public class WizardController {
                     docxService.generateRelacion(folder, seleccionados, extraData);
                 }
 
-                if (cbFichaSeguimiento.isSelected()) {
-                    docxService.generateSeguimiento(folder, seleccionados, excelRA, extraData);
-                }
-
                 if (cbPlanFormativo.isSelected()) {
                     docxService.generatePlanFormativo(folder, seleccionados, excelRA, extraData);
                 }
 
+                if (cbFichaSeguimiento.isSelected()) {
+                    docxService.generateSeguimiento(folder, seleccionados, excelRA, extraData);
+                }
+
                 if (cbValoracionFinal.isSelected()) {
                     docxService.generateValoracionFinal(folder, seleccionados, excelRA, extraData);
+                }
+
+                if (cbCalendario.isSelected()) {
+                    pdfService.generateCalendar(folder, seleccionados, extraData, holidayData, tutoriaData);
+                }
+
+                if (cbCarta.isSelected()) {
+                    pdfService.generateCarta(folder, seleccionados, extraData, excelRA);
                 }
 
                 alertInfo("Generados en: " + folder.getAbsolutePath());
@@ -314,8 +365,16 @@ public class WizardController {
 
         Button btnVolver = new Button("Volver");
         btnVolver.setOnAction(e -> showPantalla2());
-        box.getChildren().addAll(btnVolver, resumen, cbRelacion, cbFichaSeguimiento, cbPlanFormativo, cbValoracionFinal,
-                new HBox(10, btnCancelar, btnDesel, btnSelAll, btnGen));
+        // --- Añadimos los elementos a la vista ---
+        box.getChildren().addAll(
+                btnVolver,
+                resumen,
+                cbRelacion,
+                cbPlanFormativo,
+                cbWelcomePack,
+                wpChildrenBox,
+                new HBox(10, btnCancelar, btnDesel, btnSelAll, btnGen)
+        );
         root.setCenter(box);
     }
 

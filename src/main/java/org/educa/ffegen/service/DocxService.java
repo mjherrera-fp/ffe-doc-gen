@@ -14,9 +14,10 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.*;
 
-public class DocxService {
+import static org.educa.ffegen.helper.Constantes.EXTENSION_DOCX;
+import static org.educa.ffegen.helper.Constantes.WELCOME_PACK;
 
-    private static final String EXTENSION_DOCX = ".docx";
+public class DocxService {
     DocxGenerator docxPoiGenerator = new DocxPoiGenerator();
 
     public void generateRelacion(File folder, List<RowData> seleccionados, ExtraData extraData) throws Exception {
@@ -48,6 +49,7 @@ public class DocxService {
                     Map.entry(ExcelDataEnum.EMPRESA_TUTOR_EMAIL.getTag(), new EntryValue(data.getEmpresaTutorEmail())),
                     Map.entry(ExcelDataEnum.EMPRESA_TUTOR_TELEFONO.getTag(), new EntryValue(data.getEmpresaTutorTelefono())),
                     Map.entry(ExcelDataEnum.EMPRESA_DIRECCION.getTag(), new EntryValue(data.getEmpresaDireccion())),
+                    Map.entry(ExcelDataEnum.EMPRESA_CIUDAD.getTag(), new EntryValue(data.getEmpresaCiudad())),
                     Map.entry(ExcelDataEnum.NUMERO_CONVENIO.getTag(), new EntryValue(data.getNumeroConvenio(), false, ParagraphAlignment.CENTER)),
                     Map.entry(ExcelDataEnum.NUMERO_RELACION_ALUMNO.getTag(), new EntryValue(data.getNumeroRelacionAlumno(), false, ParagraphAlignment.CENTER)),
                     Map.entry(ExtraDataEnum.TUTOR_APELLIDOS.getTag(), new EntryValue(extraData.getApellidosTutor())),
@@ -72,39 +74,6 @@ public class DocxService {
                     + data.getNumeroRelacionAlumno() + EXTENSION_DOCX);
 
             docxPoiGenerator.generateForRelacion(template, replacements, row, out);
-        }
-    }
-
-    public void generateSeguimiento(File folder, List<RowData> seleccionados, List<RAData> excelRA, ExtraData extraData) throws Exception {
-
-        for (RowData row : seleccionados) {
-            ExcelData data = row.getExcelData();
-            var replacements = Map.ofEntries(
-                    Map.entry(ExcelDataEnum.ALUMNADO_APELLIDOS.getTag(), new EntryValue(data.getAlumnadoApellidos())),
-                    Map.entry(ExcelDataEnum.ALUMNADO_NOMBRE.getTag(), new EntryValue(data.getAlumnadoNombre())),
-                    Map.entry(ExcelDataEnum.ALUMNADO_EMAIL.getTag(), new EntryValue(data.getAlumnadoEmail())),
-                    Map.entry(ExcelDataEnum.NUMERO_CONVENIO.getTag(), new EntryValue(data.getNumeroConvenio(), false, ParagraphAlignment.CENTER)),
-                    Map.entry(ExcelDataEnum.NUMERO_RELACION_ALUMNO.getTag(), new EntryValue(data.getNumeroRelacionAlumno(), false, ParagraphAlignment.CENTER)),
-                    Map.entry(ExcelDataEnum.EMPRESA.getTag(), new EntryValue(data.getEmpresa())),
-                    Map.entry(ExcelDataEnum.EMPRESA_TUTOR_APELLIDOS.getTag(), new EntryValue(data.getEmpresaTutorApellidos())),
-                    Map.entry(ExcelDataEnum.EMPRESA_TUTOR_NOMBRE.getTag(), new EntryValue(data.getEmpresaTutorNombre())),
-                    Map.entry(ExcelDataEnum.EMPRESA_TUTOR_EMAIL.getTag(), new EntryValue(data.getEmpresaTutorEmail())),
-                    Map.entry(ExcelDataEnum.FECHA_SEGUIMIENTO.getTag(), new EntryValue("De " + data.getFechaInicio() + " a " + data.getFechaFinVal())),
-                    Map.entry(ExtraDataEnum.TUTOR_NOMBRE.getTag(), new EntryValue(extraData.getNombreTutor() + " " + extraData.getApellidosTutor())),
-                    Map.entry(ExtraDataEnum.CURSO.getTag(), new EntryValue(extraData.getCurso(), false, ParagraphAlignment.CENTER))
-            );
-            var template = getClass().getResourceAsStream("/templates/ficha_de_seguimiento_periodico.docx");
-            String apellidosNombre = data.getAlumnadoApellidosNombre().replace(",", "")
-                    .replace(" ", "_");
-            String folderPath = folder.getAbsolutePath() + FileSystems.getDefault().getSeparator()
-                    + SanitizerHelper.sanitize(data.getEmpresa()) + FileSystems.getDefault().getSeparator()
-                    + SanitizerHelper.sanitize(apellidosNombre);
-            File newFolder = new File(folderPath);
-            newFolder.mkdirs();
-            File out = new File(newFolder, "SEGP_" + apellidosNombre + EXTENSION_DOCX);
-
-            TableRA tableRA = new TableRA(excelRA, 3);
-            docxPoiGenerator.generateForSeguimiento(template, replacements, tableRA, out);
         }
     }
 
@@ -159,6 +128,39 @@ public class DocxService {
         }
     }
 
+    public void generateSeguimiento(File folder, List<RowData> seleccionados, List<RAData> excelRA, ExtraData extraData) throws Exception {
+
+        for (RowData row : seleccionados) {
+            ExcelData data = row.getExcelData();
+            var replacements = Map.ofEntries(
+                    Map.entry(ExcelDataEnum.ALUMNADO_APELLIDOS.getTag(), new EntryValue(data.getAlumnadoApellidos())),
+                    Map.entry(ExcelDataEnum.ALUMNADO_NOMBRE.getTag(), new EntryValue(data.getAlumnadoNombre())),
+                    Map.entry(ExcelDataEnum.ALUMNADO_EMAIL.getTag(), new EntryValue(data.getAlumnadoEmail())),
+                    Map.entry(ExcelDataEnum.NUMERO_CONVENIO.getTag(), new EntryValue(data.getNumeroConvenio(), false, ParagraphAlignment.CENTER)),
+                    Map.entry(ExcelDataEnum.NUMERO_RELACION_ALUMNO.getTag(), new EntryValue(data.getNumeroRelacionAlumno(), false, ParagraphAlignment.CENTER)),
+                    Map.entry(ExcelDataEnum.EMPRESA.getTag(), new EntryValue(data.getEmpresa())),
+                    Map.entry(ExcelDataEnum.EMPRESA_TUTOR_APELLIDOS.getTag(), new EntryValue(data.getEmpresaTutorApellidos())),
+                    Map.entry(ExcelDataEnum.EMPRESA_TUTOR_NOMBRE.getTag(), new EntryValue(data.getEmpresaTutorNombre())),
+                    Map.entry(ExcelDataEnum.EMPRESA_TUTOR_EMAIL.getTag(), new EntryValue(data.getEmpresaTutorEmail())),
+                    Map.entry(ExcelDataEnum.FECHA_SEGUIMIENTO.getTag(), new EntryValue("De " + data.getFechaInicio() + " a " + data.getFechaFinVal())),
+                    Map.entry(ExtraDataEnum.TUTOR_NOMBRE.getTag(), new EntryValue(extraData.getNombreTutor() + " " + extraData.getApellidosTutor())),
+                    Map.entry(ExtraDataEnum.CURSO.getTag(), new EntryValue(extraData.getCurso(), false, ParagraphAlignment.CENTER))
+            );
+            var template = getClass().getResourceAsStream("/templates/ficha_de_seguimiento_periodico.docx");
+            String apellidosNombre = data.getAlumnadoApellidosNombre().replace(",", "")
+                    .replace(" ", "_");
+            String folderPath = folder.getAbsolutePath() + FileSystems.getDefault().getSeparator()
+                    + SanitizerHelper.sanitize(data.getEmpresa()) + FileSystems.getDefault().getSeparator()
+                    + WELCOME_PACK;
+            File newFolder = new File(folderPath);
+            newFolder.mkdirs();
+            File out = new File(newFolder, "SEGP_" + apellidosNombre + EXTENSION_DOCX);
+
+            TableRA tableRA = new TableRA(excelRA, 3);
+            docxPoiGenerator.generateForSeguimiento(template, replacements, tableRA, out);
+        }
+    }
+
     public void generateValoracionFinal(File folder, List<RowData> seleccionados, List<RAData> excelRA, ExtraData extraData) throws Exception {
 
         for (RowData row : seleccionados) {
@@ -185,7 +187,7 @@ public class DocxService {
                     .replace(" ", "_");
             String folderPath = folder.getAbsolutePath() + FileSystems.getDefault().getSeparator()
                     + SanitizerHelper.sanitize(data.getEmpresa()) + FileSystems.getDefault().getSeparator()
-                    + SanitizerHelper.sanitize(apellidosNombre);
+                    + WELCOME_PACK ;
             File newFolder = new File(folderPath);
             newFolder.mkdirs();
             File out = new File(newFolder, "VALO_" + apellidosNombre + EXTENSION_DOCX);

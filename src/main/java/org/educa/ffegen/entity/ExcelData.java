@@ -14,6 +14,7 @@ public class ExcelData {
     private String alumnadoFechaNacimiento;
     private String empresa;
     private String empresaDireccion;
+    private String empresaCiudad;
     private String empresaCif;
     private String empresaEmail;
     private String empresaTelefono;
