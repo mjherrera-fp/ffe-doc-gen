@@ -187,7 +187,7 @@ public class DocxService {
                     .replace(" ", "_");
             String folderPath = folder.getAbsolutePath() + FileSystems.getDefault().getSeparator()
                     + SanitizerHelper.sanitize(data.getEmpresa()) + FileSystems.getDefault().getSeparator()
-                    + WELCOME_PACK ;
+                    + WELCOME_PACK;
             File newFolder = new File(folderPath);
             newFolder.mkdirs();
             File out = new File(newFolder, "VALO_" + apellidosNombre + EXTENSION_DOCX);

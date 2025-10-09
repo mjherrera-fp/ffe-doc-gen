@@ -118,13 +118,13 @@ public class FCTCalendarGeneratorPDF {
                     margin-right: 40pt; 
                     margin-bottom: 40pt; 
                 }
-                
+                                
                 table.cabecera { 
                     width: 100%; 
                     border-collapse: collapse; 
                     margin-bottom: 30px; 
                 }
-                
+                                
                 table.cabecera td { 
                     vertical-align: middle; 
                     text-align: center; 
@@ -134,11 +134,11 @@ public class FCTCalendarGeneratorPDF {
                     height: 80px; 
                     object-fit: contain; 
                 }
-                
+                                
                 .img-h { 
                     height: 80px; 
                 }
-                
+                                
                 .img-w { 
                     width: 180px; 
                 }
@@ -249,29 +249,29 @@ public class FCTCalendarGeneratorPDF {
 
     private static String getLegendHTML() {
         return """
-            <div class='legend'>
-                <h3>Leyenda:</h3>
-                <div class='legend-item'>
-                    <div class='legend-color' style='background-color: #FFFF99;'></div>
-                    <span class='legend-text'>Fecha de inicio y Fin</span>
+                <div class='legend'>
+                    <h3>Leyenda:</h3>
+                    <div class='legend-item'>
+                        <div class='legend-color' style='background-color: #FFFF99;'></div>
+                        <span class='legend-text'>Fecha de inicio y Fin</span>
+                    </div>
+                    <div class='legend-item'>
+                        <div class='legend-color' style='background-color: #D4EDDA;'></div>
+                        <span class='legend-text'>Días de asistencia a las FCT</span>
+                    </div>
+                    <div class='legend-item'>
+                        <div class='legend-color' style='background-color: #F8D7DA;'></div>
+                        <span class='legend-text'>Días festivos</span>
+                    </div>
+                    <div class='legend-item'>
+                        <div class='legend-color' style='background-color: #CCE5FF;'></div>
+                        <span class='legend-text'>Días de asistencia al centro para tutorías</span>
+                    </div>
+                    <div class='legend-item'>
+                        <div class='legend-color' style='background-color: #FFD699;'></div>
+                        <span class='legend-text'>Fines de semana</span>
+                    </div>
                 </div>
-                <div class='legend-item'>
-                    <div class='legend-color' style='background-color: #D4EDDA;'></div>
-                    <span class='legend-text'>Días de asistencia a las FCT</span>
-                </div>
-                <div class='legend-item'>
-                    <div class='legend-color' style='background-color: #F8D7DA;'></div>
-                    <span class='legend-text'>Días festivos</span>
-                </div>
-                <div class='legend-item'>
-                    <div class='legend-color' style='background-color: #CCE5FF;'></div>
-                    <span class='legend-text'>Días de asistencia al centro para tutorías</span>
-                </div>
-                <div class='legend-item'>
-                    <div class='legend-color' style='background-color: #FFD699;'></div>
-                    <span class='legend-text'>Fines de semana</span>
-                </div>
-            </div>
-            """;
+                """;
     }
 }

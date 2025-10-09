@@ -35,7 +35,7 @@ public class FCTCartaGeneratorPDF {
         }
     }
 
-    private String generateHTML(RowData row, ExtraData extraData, List<RAData> ras){
+    private String generateHTML(RowData row, ExtraData extraData, List<RAData> ras) {
         StringBuilder html = new StringBuilder();
 
         LocalDate today = LocalDate.now(ZoneId.systemDefault());

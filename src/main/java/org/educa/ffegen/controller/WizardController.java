@@ -13,7 +13,10 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.educa.ffegen.ExcelReader;
-import org.educa.ffegen.entity.*;
+import org.educa.ffegen.entity.ExcelData;
+import org.educa.ffegen.entity.ExtraData;
+import org.educa.ffegen.entity.RAData;
+import org.educa.ffegen.entity.RowData;
 import org.educa.ffegen.service.DocxService;
 import org.educa.ffegen.service.PdfService;
 
