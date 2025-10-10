@@ -47,18 +47,17 @@ public class PdfService {
         }
     }
 
-    public void generateCarta(File folder, List<RowData> seleccionados, ExtraData extraData, List<RAData> excelRA) throws Exception {
-        for (RowData row : seleccionados) {
-            ExcelData data = row.getExcelData();
+    public void generateCarta(File folder, Map<String, List<ExcelData>> groupByEmp, ExtraData extraData, List<RAData> excelRA)
+            throws Exception {
+        for (String empresa : groupByEmp.keySet()) {
 
             String folderPath = folder.getAbsolutePath() + FileSystems.getDefault().getSeparator()
-                    + SanitizerHelper.sanitize(data.getEmpresa()) + FileSystems.getDefault().getSeparator()
+                    + SanitizerHelper.sanitize(empresa) + FileSystems.getDefault().getSeparator()
                     + WELCOME_PACK;
             File newFolder = new File(folderPath);
             newFolder.mkdirs();
             File out = new File(newFolder, "Carta inicio a la empresa" + EXTENSION_PDF);
-
-            fctCartaGeneratorPDF.generateCarta(row, extraData, excelRA, out);
+            fctCartaGeneratorPDF.generateCarta(extraData, excelRA, out);
 
         }
     }

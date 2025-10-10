@@ -4,6 +4,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
@@ -17,6 +18,7 @@ import org.educa.ffegen.entity.ExcelData;
 import org.educa.ffegen.entity.ExtraData;
 import org.educa.ffegen.entity.RAData;
 import org.educa.ffegen.entity.RowData;
+import org.educa.ffegen.helper.FCTDataHelper;
 import org.educa.ffegen.service.DocxService;
 import org.educa.ffegen.service.PdfService;
 
@@ -43,6 +45,8 @@ public class WizardController {
     private final TextField tfExcel = new TextField();
     private String searchText = "";
     private boolean filtroSoloConEmpresa = false;
+
+    private final FCTDataHelper fctDataHelper = new FCTDataHelper();
 
     private final DocxService docxService = new DocxService();
     private final PdfService pdfService = new PdfService();
@@ -328,37 +332,98 @@ public class WizardController {
                 return;
             }
 
-            try {
-                if (cbRelacion.isSelected()) {
-                    docxService.generateRelacion(folder, seleccionados, extraData);
-                }
+            // Crear la ventana de progreso
+            Stage progressStage = new Stage();
+            progressStage.initOwner(stage);
+            progressStage.setTitle("Generando documentos...");
 
-                if (cbPlanFormativo.isSelected()) {
-                    docxService.generatePlanFormativo(folder, seleccionados, excelRA, extraData);
-                }
+            ProgressBar progressBar = new ProgressBar(0);
+            progressBar.setPrefWidth(400);
+            Label lblEstado = new Label("Iniciando...");
 
-                if (cbFichaSeguimiento.isSelected()) {
-                    docxService.generateSeguimiento(folder, seleccionados, excelRA, extraData);
-                }
+            VBox progressBox = new VBox(15, lblEstado, progressBar);
+            progressBox.setPadding(new Insets(20));
+            progressBox.setAlignment(Pos.CENTER);
+            progressStage.setScene(new javafx.scene.Scene(progressBox));
+            progressStage.show();
 
-                if (cbValoracionFinal.isSelected()) {
-                    docxService.generateValoracionFinal(folder, seleccionados, excelRA, extraData);
-                }
+            // Crear la tarea en segundo plano
+            Task<Void> task = new Task<>() {
+                @Override
+                protected Void call() throws Exception {
+                    int total = 0;
+                    if (cbRelacion.isSelected()) total++;
+                    if (cbPlanFormativo.isSelected()) total++;
+                    if (cbFichaSeguimiento.isSelected()) total++;
+                    if (cbValoracionFinal.isSelected()) total++;
+                    if (cbCalendario.isSelected()) total++;
+                    if (cbCarta.isSelected()) total++;
 
-                if (cbCalendario.isSelected()) {
-                    pdfService.generateCalendar(folder, seleccionados, extraData, holidayData, tutoriaData);
-                }
+                    int done = 0;
 
-                if (cbCarta.isSelected()) {
-                    pdfService.generateCarta(folder, seleccionados, extraData, excelRA);
-                }
+                    if (cbRelacion.isSelected()) {
+                        updateMessage("Generando relación de alumnos...");
+                        docxService.generateRelacion(folder, fctDataHelper.prepareDataByCompany(seleccionados), extraData);
+                        updateProgress(++done, total);
+                    }
 
-                alertInfo("Generados en: " + folder.getAbsolutePath());
+                    if (cbPlanFormativo.isSelected()) {
+                        updateMessage("Generando plan formativo...");
+                        docxService.generatePlanFormativo(folder, seleccionados, excelRA, extraData);
+                        updateProgress(++done, total);
+                    }
+
+                    if (cbFichaSeguimiento.isSelected()) {
+                        updateMessage("Generando fichas de seguimiento...");
+                        docxService.generateSeguimiento(folder, seleccionados, excelRA, extraData);
+                        updateProgress(++done, total);
+                    }
+
+                    if (cbValoracionFinal.isSelected()) {
+                        updateMessage("Generando valoraciones finales...");
+                        docxService.generateValoracionFinal(folder, seleccionados, excelRA, extraData);
+                        updateProgress(++done, total);
+                    }
+
+                    if (cbCalendario.isSelected()) {
+                        updateMessage("Generando calendarios FFE...");
+                        pdfService.generateCalendar(folder, seleccionados, extraData, holidayData, tutoriaData);
+                        updateProgress(++done, total);
+                    }
+
+                    if (cbCarta.isSelected()) {
+                        updateMessage("Generando cartas a la empresa...");
+                        pdfService.generateCarta(folder, fctDataHelper.prepareDataByCompany(seleccionados), extraData, excelRA);
+                        updateProgress(++done, total);
+                    }
+
+                    updateMessage("Completado");
+                    updateProgress(total, total);
+
+                    return null;
+                }
+            };
+
+            // Enlazar la UI
+            lblEstado.textProperty().bind(task.messageProperty());
+            progressBar.progressProperty().bind(task.progressProperty());
+
+            // Cuando termina correctamente
+            task.setOnSucceeded(ev -> {
+                progressStage.close();
+                alertInfo("Documentos generados en: " + folder.getAbsolutePath());
                 showPantalla1();
-            } catch (Exception ex) {
-                alert("Error: " + ex.getMessage());
-                ex.printStackTrace();
-            }
+            });
+
+            // Si ocurre un error
+            task.setOnFailed(ev -> {
+                progressStage.close();
+                alert("Error: " + task.getException().getMessage());
+                task.getException().printStackTrace();
+            });
+
+            // Ejecutar en segundo plano
+            new Thread(task).start();
         });
         btnGen.getStyleClass().addAll("accent");
 

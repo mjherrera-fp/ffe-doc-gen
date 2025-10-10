@@ -20,20 +20,7 @@ import static org.educa.ffegen.helper.Constantes.WELCOME_PACK;
 public class DocxService {
     DocxGenerator docxPoiGenerator = new DocxPoiGenerator();
 
-    public void generateRelacion(File folder, List<RowData> seleccionados, ExtraData extraData) throws Exception {
-        Map<String, List<ExcelData>> groupByEmp = new HashMap<>();
-        for (RowData row : seleccionados) {
-            ExcelData data = row.getExcelData();
-            if (data.getEmpresa() != null && !data.getEmpresa().isEmpty()) {
-                if (groupByEmp.containsKey(data.getEmpresa())) {
-                    groupByEmp.get(data.getEmpresa()).add(data);
-                } else {
-                    List<ExcelData> dataForEmp = new ArrayList<>();
-                    dataForEmp.add(data);
-                    groupByEmp.put(data.getEmpresa(), dataForEmp);
-                }
-            }
-        }
+    public void generateRelacion(File folder, Map<String, List<ExcelData>> groupByEmp, ExtraData extraData) throws Exception {
 
         for (List<ExcelData> row : groupByEmp.values()) {
             ExcelData data = row.getFirst();

@@ -19,11 +19,11 @@ import java.util.Locale;
 
 public class FCTCartaGeneratorPDF {
 
-    public void generateCarta(RowData row, ExtraData extraData, List<RAData> ras, File out) throws Exception {
-        String html = generateHTML(row, extraData, ras);
+    public void generateCarta(ExtraData extraData, List<RAData> ras, File out) throws Exception {
+        String html = generateHTML(extraData, ras);
 
-        PdfWriter writer = new PdfWriter(new FileOutputStream(out));
-        try (PdfDocument pdfDoc = new PdfDocument(writer)) {
+        try (PdfWriter writer = new PdfWriter(new FileOutputStream(out));
+             PdfDocument pdfDoc = new PdfDocument(writer)) {
             // Establecer el tamaño de página en landscape (A4 horizontal)
             pdfDoc.setDefaultPageSize(PageSize.A4);
             ConverterProperties props = new ConverterProperties();
@@ -35,7 +35,7 @@ public class FCTCartaGeneratorPDF {
         }
     }
 
-    private String generateHTML(RowData row, ExtraData extraData, List<RAData> ras) {
+    private String generateHTML(ExtraData extraData, List<RAData> ras) {
         StringBuilder html = new StringBuilder();
 
         LocalDate today = LocalDate.now(ZoneId.systemDefault());

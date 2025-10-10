@@ -1,8 +1,6 @@
 package org.educa.ffegen.helper;
 
-import org.educa.ffegen.entity.DayFFE;
-import org.educa.ffegen.entity.MonthFFE;
-import org.educa.ffegen.entity.MonthRowData;
+import org.educa.ffegen.entity.*;
 import org.educa.ffegen.enums.DayTypeFFE;
 
 import java.time.DayOfWeek;
@@ -70,6 +68,23 @@ public class FCTDataHelper {
         }
 
         return rowDataList;
+    }
+
+    public Map<String, List<ExcelData>> prepareDataByCompany(List<RowData> seleccionados){
+        Map<String, List<ExcelData>> groupByEmp = new HashMap<>();
+        for (RowData row : seleccionados) {
+            ExcelData data = row.getExcelData();
+            if (data.getEmpresa() != null && !data.getEmpresa().isEmpty()) {
+                if (groupByEmp.containsKey(data.getEmpresa())) {
+                    groupByEmp.get(data.getEmpresa()).add(data);
+                } else {
+                    List<ExcelData> dataForEmp = new ArrayList<>();
+                    dataForEmp.add(data);
+                    groupByEmp.put(data.getEmpresa(), dataForEmp);
+                }
+            }
+        }
+        return groupByEmp;
     }
 
     /**
