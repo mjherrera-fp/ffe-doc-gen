@@ -17,7 +17,8 @@ expresa o implícita de ningún tipo.
 indirecto, incidental, especial o consecuente que pueda surgir del uso o mal funcionamiento de la aplicación.
 
 ## 🏷️ Versiones
-
+- Versión v0.1.1-alpha. Versión inicial de la aplicación. Funcionalidad probada de forma limitada.
+  - Se ha aumentado el número de RA a 30.
 - Versión v0.1.0-alpha. Versión inicial de la aplicación. Funcionalidad probada de forma limitada.
     - Generación de documentación para las FFE.
     - Selección de alumnos.
@@ -36,7 +37,7 @@ La versión de este proyecto es preliminar, y está en fase de pruebas.
 Tanto el **Excel** como **el propio programa** tienen funciones que **han sido probadas de forma MUY limitada**. Si va a
 usar este programa **asegúrese de que los datos generados** con el mismo **son correctos**.
 
-> Esta versión está limitada a máximo **20 Resultados de Aprendizaje**
+> La última versión está limitada a máximo **30 Resultados de Aprendizaje**
 
 ## 🖥️ Acceso a la aplicación
 
