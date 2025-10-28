@@ -106,6 +106,40 @@
             <artifactId>html2pdf</artifactId>
             <version>4.0.5</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.itextpdf</groupId>
+            <artifactId>sign</artifactId>
+            <version>7.2.6</version>
+        </dependency>
+
+        <!-- Librería principal de docx4j -->
+        <dependency>
+            <groupId>org.docx4j</groupId>
+            <artifactId>docx4j-core</artifactId>
+            <version>11.4.9</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.docx4j</groupId>
+            <artifactId>docx4j-JAXB-ReferenceImpl</artifactId>
+            <version>11.4.9</version>
+        </dependency>
+
+        <!-- Módulo para exportar a PDF vía XSL-FO -->
+        <dependency>
+            <groupId>org.docx4j</groupId>
+            <artifactId>docx4j-export-fo</artifactId>
+            <version>11.4.9</version>
+        </dependency>
+
+        <!-- Apache FOP (el motor FO que genera el PDF) -->
+        <dependency>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>fop</artifactId>
+            <version>2.9</version>
+        </dependency>
+
     </dependencies>
 
     <build>

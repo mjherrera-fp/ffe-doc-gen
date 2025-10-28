@@ -1,5 +1,6 @@
 package org.educa.ffegen.controller;
 
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -14,6 +15,7 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.educa.ffegen.ExcelReader;
+import org.educa.ffegen.config.AppConfig;
 import org.educa.ffegen.entity.ExcelData;
 import org.educa.ffegen.entity.ExtraData;
 import org.educa.ffegen.entity.RAData;
@@ -24,10 +26,8 @@ import org.educa.ffegen.service.PdfService;
 
 import java.io.File;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.Executors;
 
 public class WizardController {
     private static final String BTN_CANCELAR = "Cancelar";
@@ -51,6 +51,8 @@ public class WizardController {
     private final DocxService docxService = new DocxService();
     private final PdfService pdfService = new PdfService();
 
+    private final AppConfig config = new AppConfig();
+
     public WizardController(Stage s) {
         stage = s;
         showPantalla1();
@@ -65,12 +67,27 @@ public class WizardController {
         box.setPadding(new Insets(20));
         tfExcel.setPrefWidth(500);
         tfExcel.setEditable(false);
+        if (config.get(AppConfig.DATA_FILE) != null) {
+            File f = new File(config.get(AppConfig.DATA_FILE));
+            if (f.exists()) {
+                tfExcel.setText(config.get(AppConfig.DATA_FILE));
+            }
+        }
         Button btnChoose = new Button("Seleccionar Excel...");
         Button btnImport = new Button("Importar");
         box.getChildren().addAll(new Label("Importar Excel:"), new HBox(8, tfExcel, btnChoose), btnImport);
         btnChoose.setOnAction(e -> {
             FileChooser fc = new FileChooser();
             fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Excel", "*.xlsx"));
+
+            // Cargar ruta previa del YAML si existe
+            if (config.get(AppConfig.DATA_FILE) != null) {
+                File last = new File(config.get(AppConfig.DATA_FILE));
+                if (last.exists()) {
+                    fc.setInitialDirectory(last.isDirectory() ? last : last.getParentFile());
+                }
+            }
+
             // Si el campo ya tiene una ruta válida, usarla
             String currentPath = tfExcel.getText();
             if (currentPath != null && !currentPath.isBlank()) {
@@ -85,7 +102,11 @@ public class WizardController {
                 }
             }
             sel = fc.showOpenDialog(stage);
-            if (sel != null) tfExcel.setText(sel.getAbsolutePath());
+            if (sel != null) {
+                tfExcel.setText(sel.getAbsolutePath());
+                config.set(AppConfig.DATA_FILE, sel.getAbsolutePath());
+                config.save();
+            }
         });
         btnImport.setOnAction(e -> {
             if (tfExcel.getText().isBlank()) {
@@ -266,55 +287,30 @@ public class WizardController {
 
         CheckBox cbRelacion = new CheckBox("Relación de alumnos");
         CheckBox cbPlanFormativo = new CheckBox("Plan de formación");
-
         CheckBox cbFichaSeguimiento = new CheckBox("Ficha de seguimiento");
         CheckBox cbValoracionFinal = new CheckBox("Valoración final del tutor de la empresa");
         CheckBox cbCalendario = new CheckBox("Calendario FFE");
         CheckBox cbCarta = new CheckBox("Carta a la empresa");
         CheckBox cbWelcomePack = new CheckBox("Welcome Pack");
 
-        // VBox "indentado" para mostrar los hijos del Welcome Pack
         VBox wpChildrenBox = new VBox(8, cbFichaSeguimiento, cbValoracionFinal, cbCalendario, cbCarta);
-        wpChildrenBox.setPadding(new Insets(0, 0, 0, 24)); // Sangría visual (izquierda)
+        wpChildrenBox.setPadding(new Insets(0, 0, 0, 24));
 
         List<CheckBox> checkBoxes = List.of(cbRelacion, cbPlanFormativo, cbWelcomePack);
 
         Button btnSelAll = new Button("Seleccionar todo");
-        btnSelAll.setOnAction(e -> checkBoxes.forEach(cb -> {
-            cb.setSelected(true);
-        }));
+        btnSelAll.setOnAction(e -> checkBoxes.forEach(cb -> cb.setSelected(true)));
 
         Button btnDesel = new Button("Deseleccionar todo");
-        btnDesel.setOnAction(e -> checkBoxes.forEach(cb -> {
-            cb.setSelected(false);
-        }));
+        btnDesel.setOnAction(e -> checkBoxes.forEach(cb -> cb.setSelected(false)));
 
-        // --- Lógica de "Welcome Pack" ---
         cbWelcomePack.selectedProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal) {
-                // Si se selecciona el Welcome Pack:
-                cbFichaSeguimiento.setSelected(true);
-                cbValoracionFinal.setSelected(true);
-                cbCalendario.setSelected(true);
-                cbCarta.setSelected(true);
-
-                // Se deshabilitan para que no puedan cambiarse
-                cbFichaSeguimiento.setDisable(true);
-                cbValoracionFinal.setDisable(true);
-                cbCalendario.setDisable(true);
-                cbCarta.setDisable(true);
-            } else {
-                // Si se desmarca el Welcome Pack:
-                cbFichaSeguimiento.setSelected(false);
-                cbValoracionFinal.setSelected(false);
-                cbCalendario.setSelected(false);
-                cbCarta.setSelected(false);
-
-                cbFichaSeguimiento.setDisable(false);
-                cbValoracionFinal.setDisable(false);
-                cbCalendario.setDisable(false);
-                cbCarta.setDisable(false);
-            }
+            boolean checked = newVal;
+            List<CheckBox> hijos = List.of(cbFichaSeguimiento, cbValoracionFinal, cbCalendario, cbCarta);
+            hijos.forEach(cb -> {
+                cb.setSelected(checked);
+                cb.setDisable(checked);
+            });
         });
 
         Button btnGen = new Button("Generar documentos");
@@ -325,115 +321,158 @@ public class WizardController {
                 alert("Selecciona al menos un tipo");
                 return;
             }
+
             DirectoryChooser dc = new DirectoryChooser();
+            if (config.get(AppConfig.OUTPUT_PATH) != null) {
+                File last = new File(config.get(AppConfig.OUTPUT_PATH));
+                if (last.exists() && last.isDirectory()) dc.setInitialDirectory(last);
+            }
+
             File folder = dc.showDialog(stage);
             if (folder == null) {
                 alert("Selecciona carpeta de destino");
                 return;
             }
 
-            // Crear la ventana de progreso
+            config.set(AppConfig.OUTPUT_PATH, folder.getAbsolutePath());
+            config.save();
+
+            // --- Crear ventana de progreso ---
             Stage progressStage = new Stage();
             progressStage.initOwner(stage);
             progressStage.setTitle("Generando documentos...");
 
-            ProgressBar progressBar = new ProgressBar(0);
-            progressBar.setPrefWidth(400);
-            Label lblEstado = new Label("Iniciando...");
-
-            VBox progressBox = new VBox(15, lblEstado, progressBar);
+            VBox progressBox = new VBox(15);
             progressBox.setPadding(new Insets(20));
-            progressBox.setAlignment(Pos.CENTER);
+            progressBox.setAlignment(Pos.CENTER_LEFT);
+
+            // Lista de tareas por documento
+            Map<String, Task<Void>> tasks = new LinkedHashMap<>();
+
+            if (cbRelacion.isSelected()) {
+                tasks.put("Relación de alumnos", new Task<>() {
+                    @Override
+                    protected Void call() throws Exception {
+                        docxService.generateRelacion(folder, fctDataHelper.prepareDataByCompany(seleccionados), extraData);
+                        return null;
+                    }
+                });
+            }
+            if (cbPlanFormativo.isSelected()) {
+                tasks.put("Plan formativo", new Task<>() {
+                    @Override
+                    protected Void call() throws Exception {
+                        docxService.generatePlanFormativo(folder, seleccionados, excelRA, extraData);
+                        return null;
+                    }
+                });
+            }
+            if (cbFichaSeguimiento.isSelected()) {
+                tasks.put("Ficha seguimiento", new Task<>() {
+                    @Override
+                    protected Void call() throws Exception {
+                        docxService.generateSeguimiento(folder, seleccionados, excelRA, extraData);
+                        return null;
+                    }
+                });
+            }
+            if (cbValoracionFinal.isSelected()) {
+                tasks.put("Valoración final", new Task<>() {
+                    @Override
+                    protected Void call() throws Exception {
+                        docxService.generateValoracionFinal(folder, seleccionados, excelRA, extraData);
+                        return null;
+                    }
+                });
+            }
+            if (cbCalendario.isSelected()) {
+                tasks.put("Calendario FFE", new Task<>() {
+                    @Override
+                    protected Void call() throws Exception {
+                        pdfService.generateCalendar(folder, seleccionados, extraData, holidayData, tutoriaData);
+                        return null;
+                    }
+                });
+            }
+            if (cbCarta.isSelected()) {
+                tasks.put("Carta a la empresa", new Task<>() {
+                    @Override
+                    protected Void call() throws Exception {
+                        pdfService.generateCarta(folder, fctDataHelper.prepareDataByCompany(seleccionados), extraData, excelRA);
+                        return null;
+                    }
+                });
+            }
+
+            // Crear UI antes de ejecutar las tareas
+            for (var entry : tasks.entrySet()) {
+                Label lbl = new Label(entry.getKey());
+                ProgressIndicator indicator = new ProgressIndicator();
+                indicator.setProgress(-1); // indeterminado, gira
+                indicator.setPrefSize(40, 40);
+
+                HBox row = new HBox(10, indicator, lbl);
+                row.setAlignment(Pos.CENTER_LEFT);
+                progressBox.getChildren().add(row);
+
+                Task<Void> t = entry.getValue();
+
+                t.setOnSucceeded(ev -> Platform.runLater(() -> {
+                    indicator.setProgress(1);
+                    indicator.setStyle("-fx-progress-color: green;");
+                    lbl.setText(entry.getKey() + " ✔️");
+                }));
+
+                t.setOnFailed(ev -> Platform.runLater(() -> {
+                    indicator.setStyle("-fx-progress-color: red;");
+                    lbl.setText(entry.getKey() + " ❌ (" + t.getException().getMessage() + ")");
+                    t.getException().printStackTrace();
+                }));
+            }
+
+            // Mostrar la ventana ANTES de iniciar las tareas
             progressStage.setScene(new javafx.scene.Scene(progressBox));
             progressStage.show();
 
-            // Crear la tarea en segundo plano
-            Task<Void> task = new Task<>() {
-                @Override
-                protected Void call() throws Exception {
-                    int total = 0;
-                    if (cbRelacion.isSelected()) total++;
-                    if (cbPlanFormativo.isSelected()) total++;
-                    if (cbFichaSeguimiento.isSelected()) total++;
-                    if (cbValoracionFinal.isSelected()) total++;
-                    if (cbCalendario.isSelected()) total++;
-                    if (cbCarta.isSelected()) total++;
+            // Ahora ejecutar las tareas en paralelo
+            // Ejecutar tareas en paralelo usando try-with-resources
+            new Thread(() -> {
+                try (var executor = Executors.newFixedThreadPool(Math.min(tasks.size(), 4))) {
+                    tasks.values().forEach(task -> executor.submit(() -> {
+                        try {
+                            task.run(); // ejecuta el Task en este hilo
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }));
 
-                    int done = 0;
-
-                    if (cbRelacion.isSelected()) {
-                        updateMessage("Generando relación de alumnos...");
-                        docxService.generateRelacion(folder, fctDataHelper.prepareDataByCompany(seleccionados), extraData);
-                        updateProgress(++done, total);
+                    // Esperar a que terminen todas
+                    for (Task<Void> t : tasks.values()) {
+                        t.get();
                     }
 
-                    if (cbPlanFormativo.isSelected()) {
-                        updateMessage("Generando plan formativo...");
-                        docxService.generatePlanFormativo(folder, seleccionados, excelRA, extraData);
-                        updateProgress(++done, total);
-                    }
+                    Platform.runLater(() -> {
+                        alertInfo("Documentos generados en: " + folder.getAbsolutePath());
+                        progressStage.close();
+                        showPantalla1();
+                    });
 
-                    if (cbFichaSeguimiento.isSelected()) {
-                        updateMessage("Generando fichas de seguimiento...");
-                        docxService.generateSeguimiento(folder, seleccionados, excelRA, extraData);
-                        updateProgress(++done, total);
-                    }
-
-                    if (cbValoracionFinal.isSelected()) {
-                        updateMessage("Generando valoraciones finales...");
-                        docxService.generateValoracionFinal(folder, seleccionados, excelRA, extraData);
-                        updateProgress(++done, total);
-                    }
-
-                    if (cbCalendario.isSelected()) {
-                        updateMessage("Generando calendarios FFE...");
-                        pdfService.generateCalendar(folder, seleccionados, extraData, holidayData, tutoriaData);
-                        updateProgress(++done, total);
-                    }
-
-                    if (cbCarta.isSelected()) {
-                        updateMessage("Generando cartas a la empresa...");
-                        pdfService.generateCarta(folder, fctDataHelper.prepareDataByCompany(seleccionados), extraData, excelRA);
-                        updateProgress(++done, total);
-                    }
-
-                    updateMessage("Completado");
-                    updateProgress(total, total);
-
-                    return null;
+                } catch (Exception ex) {
+                    Platform.runLater(() -> alert("Error: " + ex.getMessage()));
+                    ex.printStackTrace();
                 }
-            };
+            }).start();
 
-            // Enlazar la UI
-            lblEstado.textProperty().bind(task.messageProperty());
-            progressBar.progressProperty().bind(task.progressProperty());
-
-            // Cuando termina correctamente
-            task.setOnSucceeded(ev -> {
-                progressStage.close();
-                alertInfo("Documentos generados en: " + folder.getAbsolutePath());
-                showPantalla1();
-            });
-
-            // Si ocurre un error
-            task.setOnFailed(ev -> {
-                progressStage.close();
-                alert("Error: " + task.getException().getMessage());
-                task.getException().printStackTrace();
-            });
-
-            // Ejecutar en segundo plano
-            new Thread(task).start();
         });
-        btnGen.getStyleClass().addAll("accent");
 
+        btnGen.getStyleClass().addAll("accent");
         Button btnCancelar = new Button(BTN_CANCELAR);
         btnCancelar.setOnAction(e -> showPantalla1());
         btnCancelar.getStyleClass().addAll("button-outlined", "danger");
 
         Button btnVolver = new Button("Volver");
         btnVolver.setOnAction(e -> showPantalla2());
-        // --- Añadimos los elementos a la vista ---
+
         box.getChildren().addAll(
                 btnVolver,
                 resumen,
@@ -445,6 +484,7 @@ public class WizardController {
         );
         root.setCenter(box);
     }
+
 
     private TableColumn<RowData, Boolean> getRowDataBooleanTableColumn() {
         TableColumn<RowData, Boolean> colSel = new TableColumn<>("Generar");

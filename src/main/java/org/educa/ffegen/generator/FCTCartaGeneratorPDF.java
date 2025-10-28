@@ -7,7 +7,6 @@ import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import org.educa.ffegen.entity.ExtraData;
 import org.educa.ffegen.entity.RAData;
-import org.educa.ffegen.entity.RowData;
 
 import java.io.File;
 import java.io.FileOutputStream;

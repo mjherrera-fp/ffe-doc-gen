@@ -16,10 +16,10 @@ public interface DocxGenerator {
 
     void generateForRelacion(InputStream templateStream,
                              Map<String, EntryValue> replacements,
-                             List<ExcelData> alumnos, File outFile) throws Exception;
+                             List<ExcelData> alumnos, File outFile, File pdfOut) throws Exception;
 
     void generateForPlanFormativo(InputStream templateStream, Map<String, EntryValue> replacements, TableRA tableRA,
-                                  File out) throws Exception;
+                                  File out, File pdfOut) throws Exception;
 
     void generateForValoracionFinal(InputStream template, Map<String, EntryValue> replacements, TableRA tableRA, File out) throws Exception;
 }

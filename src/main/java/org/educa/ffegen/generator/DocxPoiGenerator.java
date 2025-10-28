@@ -1,20 +1,26 @@
 package org.educa.ffegen.generator;
 
+import com.itextpdf.kernel.geom.Rectangle;
+import com.itextpdf.kernel.pdf.PdfReader;
+import com.itextpdf.kernel.pdf.StampingProperties;
+import com.itextpdf.signatures.*;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.xwpf.usermodel.*;
 import org.apache.xmlbeans.XmlCursor;
-import org.educa.ffegen.entity.EntryValue;
-import org.educa.ffegen.entity.ExcelData;
-import org.educa.ffegen.entity.RAData;
-import org.educa.ffegen.entity.TableRA;
+import org.docx4j.Docx4J;
+import org.docx4j.openpackaging.exceptions.Docx4JException;
+import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import org.educa.ffegen.entity.*;
 import org.educa.ffegen.enums.ExcelDataEnum;
 import org.educa.ffegen.helper.CheckboxHelper;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.*;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
+import java.io.*;
 import java.math.BigInteger;
+import java.security.GeneralSecurityException;
+import java.security.KeyStore;
+import java.security.PrivateKey;
+import java.security.cert.Certificate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -25,46 +31,9 @@ public class DocxPoiGenerator implements DocxGenerator {
     private static final int MAX_RA = 30;
 
     @Override
-    public void generateForSeguimiento(InputStream templateStream,
-                                       Map<String, EntryValue> replacements,
-                                       TableRA tableRA, File outFile) throws Exception {
-
-        try (XWPFDocument doc = new XWPFDocument(OPCPackage.open(templateStream))) {
-
-            // Reemplazar en párrafos
-            replaceData(replacements, doc);
-
-            if (tableRA != null) {
-                XWPFTable table = doc.getTables().get(tableRA.getNumTableInDoc());
-                for (int i = 0; i < tableRA.getExcelRA().size(); i++) {
-                    RAData raData = tableRA.getExcelRA().get(i);
-                    XWPFTableRow row = table.getRows().get(i + 4);
-
-                    XWPFTableCell cellCodModProf = row.getTableCells().get(1);
-                    setCellText(cellCodModProf, raData.getCodigo(), 9, ParagraphAlignment.CENTER);
-
-                    XWPFTableCell cellRA = row.getTableCells().get(2);
-                    setCellText(cellRA, raData.getRa(), 9, ParagraphAlignment.CENTER);
-                }
-                if (tableRA.getExcelRA().size() < MAX_RA) {
-                    for (int i = tableRA.getExcelRA().size(); i < MAX_RA; i++) {
-                        int pos = tableRA.getExcelRA().size() + 4;
-                        table.removeRow(pos);
-
-                    }
-                }
-            }
-
-            try (FileOutputStream fos = new FileOutputStream(outFile)) {
-                doc.write(fos);
-            }
-        }
-    }
-
-    @Override
     public void generateForRelacion(InputStream templateStream,
                                     Map<String, EntryValue> replacements,
-                                    List<ExcelData> alumnos, File outFile) throws Exception {
+                                    List<ExcelData> alumnos, File outFile, File pdfOut) throws Exception {
 
         try (XWPFDocument doc = new XWPFDocument(OPCPackage.open(templateStream))) {
 
@@ -104,12 +73,14 @@ public class DocxPoiGenerator implements DocxGenerator {
             try (FileOutputStream fos = new FileOutputStream(outFile)) {
                 doc.write(fos);
             }
+
+            docxToPdf(doc, pdfOut, null);
         }
     }
 
     @Override
     public void generateForPlanFormativo(InputStream template, Map<String, EntryValue> replacements, TableRA tableRA,
-                                         File out) throws Exception {
+                                         File out, File pdfOut) throws Exception {
         try (XWPFDocument doc = new XWPFDocument(OPCPackage.open(template))) {
             CheckboxHelper checkboxHelper = new CheckboxHelper(doc);
 
@@ -206,6 +177,45 @@ public class DocxPoiGenerator implements DocxGenerator {
             try (FileOutputStream fos = new FileOutputStream(out)) {
                 doc.write(fos);
             }
+
+            docxToPdf(doc, pdfOut, null);
+        }
+    }
+
+    @Override
+    public void generateForSeguimiento(InputStream templateStream,
+                                       Map<String, EntryValue> replacements,
+                                       TableRA tableRA, File outFile) throws Exception {
+
+        try (XWPFDocument doc = new XWPFDocument(OPCPackage.open(templateStream))) {
+
+            // Reemplazar en párrafos
+            replaceData(replacements, doc);
+
+            if (tableRA != null) {
+                XWPFTable table = doc.getTables().get(tableRA.getNumTableInDoc());
+                for (int i = 0; i < tableRA.getExcelRA().size(); i++) {
+                    RAData raData = tableRA.getExcelRA().get(i);
+                    XWPFTableRow row = table.getRows().get(i + 4);
+
+                    XWPFTableCell cellCodModProf = row.getTableCells().get(1);
+                    setCellText(cellCodModProf, raData.getCodigo(), 9, ParagraphAlignment.CENTER);
+
+                    XWPFTableCell cellRA = row.getTableCells().get(2);
+                    setCellText(cellRA, raData.getRa(), 9, ParagraphAlignment.CENTER);
+                }
+                if (tableRA.getExcelRA().size() < MAX_RA) {
+                    for (int i = tableRA.getExcelRA().size(); i < MAX_RA; i++) {
+                        int pos = tableRA.getExcelRA().size() + 4;
+                        table.removeRow(pos);
+
+                    }
+                }
+            }
+
+            try (FileOutputStream fos = new FileOutputStream(outFile)) {
+                doc.write(fos);
+            }
         }
     }
 
@@ -237,6 +247,78 @@ public class DocxPoiGenerator implements DocxGenerator {
                 doc.write(fos);
             }
         }
+    }
+
+    private void docxToPdf(XWPFDocument document, File out, SignEntity signPDF) throws IOException, Docx4JException, GeneralSecurityException {
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
+             ByteArrayOutputStream docxOutputStream = new ByteArrayOutputStream();
+             FileOutputStream fos = new FileOutputStream(out)) {
+            document.write(baos);
+
+            // Paso 1: Escribir el XWPFDocument a un ByteArrayOutputStream temporal
+            document.write(docxOutputStream);
+
+            // Paso 2: Convertir el ByteArrayOutputStream a InputStream
+            try (ByteArrayInputStream docxInputStream =
+                         new ByteArrayInputStream(docxOutputStream.toByteArray())) {
+
+                // Paso 3: Cargar el documento en docx4j
+                WordprocessingMLPackage wordMLPackage =
+                        WordprocessingMLPackage.load(docxInputStream);
+
+                Docx4J.toPDF(wordMLPackage, fos);
+            }
+        }
+
+        if (signPDF != null) {
+            File dest = getNombre(out);
+            signPDF(signPDF, out, dest);
+        }
+
+    }
+
+    private void signPDF(SignEntity signEntity, File src, File dest) throws GeneralSecurityException, IOException {
+        // 1️⃣ Cargar el keystore y obtener la clave privada
+        KeyStore ks = KeyStore.getInstance("PKCS12");
+        ks.load(new FileInputStream(signEntity.getKeystorePath()), signEntity.getPassword());
+        String alias = ks.aliases().nextElement();
+
+        PrivateKey privateKey = (PrivateKey) ks.getKey(alias, signEntity.getPassword());
+        Certificate[] chain = ks.getCertificateChain(alias);
+
+        // 2️⃣ Preparar el lector/escritor de PDF
+        PdfReader reader = new PdfReader(src);
+        PdfSigner signer = new PdfSigner(reader, new FileOutputStream(dest), new StampingProperties());
+
+        // 3️⃣ Definir la apariencia visible de la firma
+        Rectangle rect = new Rectangle(100, 150, 200, 100); // x, y, width, height (en puntos)
+        signer.getSignatureAppearance()
+                .setReason("Aprobación de documento")
+                .setLocation("Madrid, España")
+                .setPageRect(rect)
+                .setPageNumber(1) // Página donde se muestra la firma
+                .setSignatureGraphic(null) // O usar una imagen PNG con tu logo/firma
+                .setRenderingMode(PdfSignatureAppearance.RenderingMode.DESCRIPTION);
+
+        signer.setFieldName("FirmaDigital");
+
+        // 4️⃣ Crear el objeto de firma (usando SHA256)
+        IExternalSignature pks = new PrivateKeySignature(privateKey, DigestAlgorithms.SHA256, "BC");
+        IExternalDigest digest = new BouncyCastleDigest();
+
+        // 5️⃣ Aplicar la firma digital
+        signer.signDetached(
+                digest,
+                pks,
+                chain,
+                null,
+                null,
+                null,
+                0,
+                PdfSigner.CryptoStandard.CADES
+        );
+
+        System.out.println("✅ PDF firmado correctamente: " + dest);
     }
 
     private void setCellText(XWPFTableCell cell, String text, int fontSize, ParagraphAlignment alignment) {
@@ -337,6 +419,21 @@ public class DocxPoiGenerator implements DocxGenerator {
         // 4. centrar
         CTJcTable jc = tblPr.isSetJc() ? tblPr.getJc() : tblPr.addNewJc();
         jc.setVal(STJcTable.CENTER);
+    }
+
+    private File getNombre(File inputFile) {
+        // 1️⃣ Obtener el nombre base (sin extensión)
+        String name = inputFile.getName(); // "contrato.pdf"
+        int dotIndex = name.lastIndexOf('.');
+        String baseName = (dotIndex > 0) ? name.substring(0, dotIndex) : name;
+
+        // 2️⃣ Crear el nuevo nombre con sufijo "_signed"
+        String signedName = baseName + "_signed.pdf";
+
+        // 3️⃣ Crear el nuevo File en la misma carpeta
+        File signedFile = new File(inputFile.getParent(), signedName);
+
+        return signedFile;
     }
 
 }

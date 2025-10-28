@@ -70,7 +70,7 @@ public class FCTDataHelper {
         return rowDataList;
     }
 
-    public Map<String, List<ExcelData>> prepareDataByCompany(List<RowData> seleccionados){
+    public Map<String, List<ExcelData>> prepareDataByCompany(List<RowData> seleccionados) {
         Map<String, List<ExcelData>> groupByEmp = new HashMap<>();
         for (RowData row : seleccionados) {
             ExcelData data = row.getExcelData();

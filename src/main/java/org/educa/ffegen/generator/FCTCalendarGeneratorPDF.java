@@ -18,8 +18,8 @@ public class FCTCalendarGeneratorPDF {
     public void generateCalendar(List<MonthFFE> months, String curso, File outputPath) throws Exception {
         String html = generateHTML(months, curso);
 
-        PdfWriter writer = new PdfWriter(new FileOutputStream(outputPath));
-        try (PdfDocument pdfDoc = new PdfDocument(writer)) {
+        try (PdfWriter writer = new PdfWriter(new FileOutputStream(outputPath));
+             PdfDocument pdfDoc = new PdfDocument(writer)) {
 
             // Establecer el tamaño de página en landscape (A4 horizontal)
             pdfDoc.setDefaultPageSize(PageSize.A4.rotate());

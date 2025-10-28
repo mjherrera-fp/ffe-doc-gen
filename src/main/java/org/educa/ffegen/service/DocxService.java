@@ -12,10 +12,11 @@ import java.io.File;
 import java.nio.file.FileSystems;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
-import static org.educa.ffegen.helper.Constantes.EXTENSION_DOCX;
-import static org.educa.ffegen.helper.Constantes.WELCOME_PACK;
+import static org.educa.ffegen.helper.Constantes.*;
 
 public class DocxService {
     DocxGenerator docxPoiGenerator = new DocxPoiGenerator();
@@ -59,8 +60,10 @@ public class DocxService {
             newFolder.mkdirs();
             File out = new File(newFolder, "RELA_"
                     + data.getNumeroRelacionAlumno() + EXTENSION_DOCX);
+            File pdfOut = new File(newFolder, "RELA_"
+                    + data.getNumeroRelacionAlumno() + EXTENSION_PDF);
 
-            docxPoiGenerator.generateForRelacion(template, replacements, row, out);
+            docxPoiGenerator.generateForRelacion(template, replacements, row, out, pdfOut);
         }
     }
 
@@ -108,10 +111,11 @@ public class DocxService {
             File newFolder = new File(folderPath);
             newFolder.mkdirs();
             File out = new File(newFolder, "PLFO_" + apellidosNombre + EXTENSION_DOCX);
+            File pdfOut = new File(newFolder, "PLFO_" + apellidosNombre + EXTENSION_PDF);
 
             //TableRA tableRA = new TableRA(excelRA, 1);//Nº periodo
             TableRA tableRA = new TableRA(excelRA, 1);
-            docxPoiGenerator.generateForPlanFormativo(template, replacements, tableRA, out);
+            docxPoiGenerator.generateForPlanFormativo(template, replacements, tableRA, out, pdfOut);
         }
     }
 
@@ -183,4 +187,6 @@ public class DocxService {
             docxPoiGenerator.generateForValoracionFinal(template, replacements, tableRA, out);
         }
     }
+
+
 }
