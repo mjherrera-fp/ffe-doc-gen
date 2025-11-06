@@ -292,6 +292,8 @@ public class WizardController {
         CheckBox cbCalendario = new CheckBox("Calendario FFE");
         CheckBox cbCarta = new CheckBox("Carta a la empresa");
         CheckBox cbWelcomePack = new CheckBox("Welcome Pack");
+        CheckBox cbGeneraPDFs = new CheckBox("Generar PDFs");
+        cbGeneraPDFs.setSelected(true);
 
         VBox wpChildrenBox = new VBox(8, cbFichaSeguimiento, cbValoracionFinal, cbCalendario, cbCarta);
         wpChildrenBox.setPadding(new Insets(0, 0, 0, 24));
@@ -353,7 +355,7 @@ public class WizardController {
                 tasks.put("Relación de alumnos", new Task<>() {
                     @Override
                     protected Void call() throws Exception {
-                        docxService.generateRelacion(folder, fctDataHelper.prepareDataByCompany(seleccionados), extraData);
+                        docxService.generateRelacion(folder, fctDataHelper.prepareDataByCompany(seleccionados), extraData, cbGeneraPDFs.isSelected());
                         return null;
                     }
                 });
@@ -362,7 +364,7 @@ public class WizardController {
                 tasks.put("Plan formativo", new Task<>() {
                     @Override
                     protected Void call() throws Exception {
-                        docxService.generatePlanFormativo(folder, seleccionados, excelRA, extraData);
+                        docxService.generatePlanFormativo(folder, seleccionados, excelRA, extraData, cbGeneraPDFs.isSelected());
                         return null;
                     }
                 });
@@ -420,12 +422,12 @@ public class WizardController {
                 t.setOnSucceeded(ev -> Platform.runLater(() -> {
                     indicator.setProgress(1);
                     indicator.setStyle("-fx-progress-color: green;");
-                    lbl.setText(entry.getKey() + " ✔️");
+                    lbl.setText(entry.getKey());
                 }));
 
                 t.setOnFailed(ev -> Platform.runLater(() -> {
                     indicator.setStyle("-fx-progress-color: red;");
-                    lbl.setText(entry.getKey() + " ❌ (" + t.getException().getMessage() + ")");
+                    lbl.setText(entry.getKey() + " (" + t.getException().getMessage() + ")");
                     t.getException().printStackTrace();
                 }));
             }
@@ -473,9 +475,17 @@ public class WizardController {
         Button btnVolver = new Button("Volver");
         btnVolver.setOnAction(e -> showPantalla2());
 
+        HBox topBox = new HBox();
+        Pane spacer = new Pane();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+        // Agrega los elementos al HBox
+        topBox.getChildren().addAll(resumen, spacer, cbGeneraPDFs);
+        topBox.setAlignment(Pos.CENTER); // Alinea los elementos verticalmente al centro
+
+
         box.getChildren().addAll(
                 btnVolver,
-                resumen,
+                topBox,
                 cbRelacion,
                 cbPlanFormativo,
                 cbWelcomePack,

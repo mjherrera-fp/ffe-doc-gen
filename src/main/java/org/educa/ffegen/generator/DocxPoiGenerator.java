@@ -74,7 +74,9 @@ public class DocxPoiGenerator implements DocxGenerator {
                 doc.write(fos);
             }
 
-            docxToPdf(doc, pdfOut, null);
+            if (pdfOut != null) {
+                docxToPdf(doc, pdfOut, null);
+            }
         }
     }
 
@@ -178,7 +180,9 @@ public class DocxPoiGenerator implements DocxGenerator {
                 doc.write(fos);
             }
 
-            docxToPdf(doc, pdfOut, null);
+            if (pdfOut != null) {
+                docxToPdf(doc, pdfOut, null);
+            }
         }
     }
 

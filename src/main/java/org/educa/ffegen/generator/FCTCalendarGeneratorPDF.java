@@ -128,6 +128,7 @@ public class FCTCalendarGeneratorPDF {
                 table.cabecera td { 
                     vertical-align: middle; 
                     text-align: center; 
+                    width: 33%;
                 }
                     
                 table.cabecera img { 

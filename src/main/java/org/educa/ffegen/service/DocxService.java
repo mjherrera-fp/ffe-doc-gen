@@ -21,7 +21,7 @@ import static org.educa.ffegen.helper.Constantes.*;
 public class DocxService {
     DocxGenerator docxPoiGenerator = new DocxPoiGenerator();
 
-    public void generateRelacion(File folder, Map<String, List<ExcelData>> groupByEmp, ExtraData extraData) throws Exception {
+    public void generateRelacion(File folder, Map<String, List<ExcelData>> groupByEmp, ExtraData extraData, boolean generatePDF) throws Exception {
 
         for (List<ExcelData> row : groupByEmp.values()) {
             ExcelData data = row.getFirst();
@@ -60,14 +60,16 @@ public class DocxService {
             newFolder.mkdirs();
             File out = new File(newFolder, "RELA_"
                     + data.getNumeroRelacionAlumno() + EXTENSION_DOCX);
-            File pdfOut = new File(newFolder, "RELA_"
-                    + data.getNumeroRelacionAlumno() + EXTENSION_PDF);
-
+            File pdfOut = null;
+            if (generatePDF) {
+                pdfOut = new File(newFolder, "RELA_"
+                        + data.getNumeroRelacionAlumno() + EXTENSION_PDF);
+            }
             docxPoiGenerator.generateForRelacion(template, replacements, row, out, pdfOut);
         }
     }
 
-    public void generatePlanFormativo(File folder, List<RowData> seleccionados, List<RAData> excelRA, ExtraData extraData) throws Exception {
+    public void generatePlanFormativo(File folder, List<RowData> seleccionados, List<RAData> excelRA, ExtraData extraData, boolean generatePDF) throws Exception {
 
         for (RowData row : seleccionados) {
             ExcelData data = row.getExcelData();
@@ -111,7 +113,11 @@ public class DocxService {
             File newFolder = new File(folderPath);
             newFolder.mkdirs();
             File out = new File(newFolder, "PLFO_" + apellidosNombre + EXTENSION_DOCX);
-            File pdfOut = new File(newFolder, "PLFO_" + apellidosNombre + EXTENSION_PDF);
+
+            File pdfOut = null;
+            if (generatePDF) {
+                pdfOut = new File(newFolder, "PLFO_" + apellidosNombre + EXTENSION_PDF);
+            }
 
             //TableRA tableRA = new TableRA(excelRA, 1);//Nº periodo
             TableRA tableRA = new TableRA(excelRA, 1);

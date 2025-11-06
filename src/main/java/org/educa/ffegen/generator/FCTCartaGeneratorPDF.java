@@ -54,7 +54,7 @@ public class FCTCartaGeneratorPDF {
         html.append("        h1 { text-align: center; margin-top: 20px; }\n");
         html.append("        p { text-align: justify; }\n");
         html.append("        table.cabecera { width: 100%; border-collapse: collapse; margin-bottom: 30px; }\n");
-        html.append("        table.cabecera td { vertical-align: middle; text-align: center; }\n");
+        html.append("        table.cabecera td { vertical-align: middle; text-align: center; width: 33%; }\n");
         html.append("        table.cabecera img { height: 80px; object-fit: contain; }\n");
         html.append("        .content { text-align: justify; text-justify: inter-word; }\n");
         html.append("        .img-h { height: 80px; }\n");

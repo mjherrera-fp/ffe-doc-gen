@@ -18,11 +18,14 @@ indirecto, incidental, especial o consecuente que pueda surgir del uso o mal fun
 
 ## 🏷️ Versiones
 
+>⚠️NOTA: La transformación de word a PDF se realiza usando transformaciones XSL-FO lo cual hace que la generación de la documentación se ralentice. Si no deseas generar los PDF, recuerda desactivar la opción en la última pantalla. Si desea crear PDFs de los documentos, prepara un cafe 🍵 y tómate la vida con paciencia
+
 - Versión v0.2.0-alpha. Versión 0.2.0-alpha de la aplicación. Funcionalidad probada de forma limitada.
     - Generación de Calendario por alumno.
     - Generación de Carta a la empresa.
-    - Generación de la documentación por hilos
-    - Creación de progreso por cada hilo durante la generación de la documentación
+    - Generación de la documentación por hilos.
+    - Seleccionar si se quiere obtener en PDF, además de en word, los documentos (plan formativo y relación de alumnos)
+    - Creación de progreso por cada hilo durante la generación de la documentación.
 - Versión v0.1.1-alpha. Versión inicial de la aplicación. Funcionalidad probada de forma limitada.
     - Se ha aumentado el número de RA a 30.
 - Versión v0.1.0-alpha. Versión inicial de la aplicación. Funcionalidad probada de forma limitada.
@@ -89,6 +92,13 @@ En esta pantalla podrá:
 Si pulsamos en cancelar, volveremos a la pantalla de selección de ficheros, si pulsamos en Siguiente, accederemos a la
 pantalla de selección de documentos.
 ![img.png](images/screen3.png)
+
+Al pulsar en generar documentos, se generarán los documentos seleccionados. 
+
+Los documentos relación de alumnos y plan de formación son documentos finales, por lo que si clicamos la opción generar PDFs, además de los Word se generarán los PDFs de estos documentos
+
+>⚠️NOTA: La transformación de word a PDF se realiza usando transformaciones XSL-FO lo cual hace que la generación de la documentación se ralentice. Si no deseas generar los PDF, recuerda desactivar la opción en la última pantalla. Si desea crear PDFs de los documentos, prepara un cafe 🍵 y tómate la vida con paciencia
+
 
 ## 📊 Campos del Excel
 
