@@ -12,27 +12,16 @@ import java.io.File;
 import java.nio.file.FileSystems;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import static org.educa.ffegen.helper.Constantes.*;
 
 public class DocxService {
-
-    private static final String EXTENSION_DOCX = ".docx";
     DocxGenerator docxPoiGenerator = new DocxPoiGenerator();
 
-    public void generateRelacion(File folder, List<RowData> seleccionados, ExtraData extraData) throws Exception {
-        Map<String, List<ExcelData>> groupByEmp = new HashMap<>();
-        for (RowData row : seleccionados) {
-            ExcelData data = row.getExcelData();
-            if (data.getEmpresa() != null && !data.getEmpresa().isEmpty()) {
-                if (groupByEmp.containsKey(data.getEmpresa())) {
-                    groupByEmp.get(data.getEmpresa()).add(data);
-                } else {
-                    List<ExcelData> dataForEmp = new ArrayList<>();
-                    dataForEmp.add(data);
-                    groupByEmp.put(data.getEmpresa(), dataForEmp);
-                }
-            }
-        }
+    public void generateRelacion(File folder, Map<String, List<ExcelData>> groupByEmp, ExtraData extraData, boolean generatePDF) throws Exception {
 
         for (List<ExcelData> row : groupByEmp.values()) {
             ExcelData data = row.getFirst();
@@ -48,6 +37,7 @@ public class DocxService {
                     Map.entry(ExcelDataEnum.EMPRESA_TUTOR_EMAIL.getTag(), new EntryValue(data.getEmpresaTutorEmail())),
                     Map.entry(ExcelDataEnum.EMPRESA_TUTOR_TELEFONO.getTag(), new EntryValue(data.getEmpresaTutorTelefono())),
                     Map.entry(ExcelDataEnum.EMPRESA_DIRECCION.getTag(), new EntryValue(data.getEmpresaDireccion())),
+                    Map.entry(ExcelDataEnum.EMPRESA_CIUDAD.getTag(), new EntryValue(data.getEmpresaCiudad())),
                     Map.entry(ExcelDataEnum.NUMERO_CONVENIO.getTag(), new EntryValue(data.getNumeroConvenio(), false, ParagraphAlignment.CENTER)),
                     Map.entry(ExcelDataEnum.NUMERO_RELACION_ALUMNO.getTag(), new EntryValue(data.getNumeroRelacionAlumno(), false, ParagraphAlignment.CENTER)),
                     Map.entry(ExtraDataEnum.TUTOR_APELLIDOS.getTag(), new EntryValue(extraData.getApellidosTutor())),
@@ -70,45 +60,16 @@ public class DocxService {
             newFolder.mkdirs();
             File out = new File(newFolder, "RELA_"
                     + data.getNumeroRelacionAlumno() + EXTENSION_DOCX);
-
-            docxPoiGenerator.generateForRelacion(template, replacements, row, out);
+            File pdfOut = null;
+            if (generatePDF) {
+                pdfOut = new File(newFolder, "RELA_"
+                        + data.getNumeroRelacionAlumno() + EXTENSION_PDF);
+            }
+            docxPoiGenerator.generateForRelacion(template, replacements, row, out, pdfOut);
         }
     }
 
-    public void generateSeguimiento(File folder, List<RowData> seleccionados, List<RAData> excelRA, ExtraData extraData) throws Exception {
-
-        for (RowData row : seleccionados) {
-            ExcelData data = row.getExcelData();
-            var replacements = Map.ofEntries(
-                    Map.entry(ExcelDataEnum.ALUMNADO_APELLIDOS.getTag(), new EntryValue(data.getAlumnadoApellidos())),
-                    Map.entry(ExcelDataEnum.ALUMNADO_NOMBRE.getTag(), new EntryValue(data.getAlumnadoNombre())),
-                    Map.entry(ExcelDataEnum.ALUMNADO_EMAIL.getTag(), new EntryValue(data.getAlumnadoEmail())),
-                    Map.entry(ExcelDataEnum.NUMERO_CONVENIO.getTag(), new EntryValue(data.getNumeroConvenio(), false, ParagraphAlignment.CENTER)),
-                    Map.entry(ExcelDataEnum.NUMERO_RELACION_ALUMNO.getTag(), new EntryValue(data.getNumeroRelacionAlumno(), false, ParagraphAlignment.CENTER)),
-                    Map.entry(ExcelDataEnum.EMPRESA.getTag(), new EntryValue(data.getEmpresa())),
-                    Map.entry(ExcelDataEnum.EMPRESA_TUTOR_APELLIDOS.getTag(), new EntryValue(data.getEmpresaTutorApellidos())),
-                    Map.entry(ExcelDataEnum.EMPRESA_TUTOR_NOMBRE.getTag(), new EntryValue(data.getEmpresaTutorNombre())),
-                    Map.entry(ExcelDataEnum.EMPRESA_TUTOR_EMAIL.getTag(), new EntryValue(data.getEmpresaTutorEmail())),
-                    Map.entry(ExcelDataEnum.FECHA_SEGUIMIENTO.getTag(), new EntryValue("De " + data.getFechaInicio() + " a " + data.getFechaFinVal())),
-                    Map.entry(ExtraDataEnum.TUTOR_NOMBRE.getTag(), new EntryValue(extraData.getNombreTutor() + " " + extraData.getApellidosTutor())),
-                    Map.entry(ExtraDataEnum.CURSO.getTag(), new EntryValue(extraData.getCurso(), false, ParagraphAlignment.CENTER))
-            );
-            var template = getClass().getResourceAsStream("/templates/ficha_de_seguimiento_periodico.docx");
-            String apellidosNombre = data.getAlumnadoApellidosNombre().replace(",", "")
-                    .replace(" ", "_");
-            String folderPath = folder.getAbsolutePath() + FileSystems.getDefault().getSeparator()
-                    + SanitizerHelper.sanitize(data.getEmpresa()) + FileSystems.getDefault().getSeparator()
-                    + SanitizerHelper.sanitize(apellidosNombre);
-            File newFolder = new File(folderPath);
-            newFolder.mkdirs();
-            File out = new File(newFolder, "SEGP_" + apellidosNombre + EXTENSION_DOCX);
-
-            TableRA tableRA = new TableRA(excelRA, 3);
-            docxPoiGenerator.generateForSeguimiento(template, replacements, tableRA, out);
-        }
-    }
-
-    public void generatePlanFormativo(File folder, List<RowData> seleccionados, List<RAData> excelRA, ExtraData extraData) throws Exception {
+    public void generatePlanFormativo(File folder, List<RowData> seleccionados, List<RAData> excelRA, ExtraData extraData, boolean generatePDF) throws Exception {
 
         for (RowData row : seleccionados) {
             ExcelData data = row.getExcelData();
@@ -153,9 +114,47 @@ public class DocxService {
             newFolder.mkdirs();
             File out = new File(newFolder, "PLFO_" + apellidosNombre + EXTENSION_DOCX);
 
+            File pdfOut = null;
+            if (generatePDF) {
+                pdfOut = new File(newFolder, "PLFO_" + apellidosNombre + EXTENSION_PDF);
+            }
+
             //TableRA tableRA = new TableRA(excelRA, 1);//Nº periodo
             TableRA tableRA = new TableRA(excelRA, 1);
-            docxPoiGenerator.generateForPlanFormativo(template, replacements, tableRA, out);
+            docxPoiGenerator.generateForPlanFormativo(template, replacements, tableRA, out, pdfOut);
+        }
+    }
+
+    public void generateSeguimiento(File folder, List<RowData> seleccionados, List<RAData> excelRA, ExtraData extraData) throws Exception {
+
+        for (RowData row : seleccionados) {
+            ExcelData data = row.getExcelData();
+            var replacements = Map.ofEntries(
+                    Map.entry(ExcelDataEnum.ALUMNADO_APELLIDOS.getTag(), new EntryValue(data.getAlumnadoApellidos())),
+                    Map.entry(ExcelDataEnum.ALUMNADO_NOMBRE.getTag(), new EntryValue(data.getAlumnadoNombre())),
+                    Map.entry(ExcelDataEnum.ALUMNADO_EMAIL.getTag(), new EntryValue(data.getAlumnadoEmail())),
+                    Map.entry(ExcelDataEnum.NUMERO_CONVENIO.getTag(), new EntryValue(data.getNumeroConvenio(), false, ParagraphAlignment.CENTER)),
+                    Map.entry(ExcelDataEnum.NUMERO_RELACION_ALUMNO.getTag(), new EntryValue(data.getNumeroRelacionAlumno(), false, ParagraphAlignment.CENTER)),
+                    Map.entry(ExcelDataEnum.EMPRESA.getTag(), new EntryValue(data.getEmpresa())),
+                    Map.entry(ExcelDataEnum.EMPRESA_TUTOR_APELLIDOS.getTag(), new EntryValue(data.getEmpresaTutorApellidos())),
+                    Map.entry(ExcelDataEnum.EMPRESA_TUTOR_NOMBRE.getTag(), new EntryValue(data.getEmpresaTutorNombre())),
+                    Map.entry(ExcelDataEnum.EMPRESA_TUTOR_EMAIL.getTag(), new EntryValue(data.getEmpresaTutorEmail())),
+                    Map.entry(ExcelDataEnum.FECHA_SEGUIMIENTO.getTag(), new EntryValue("De " + data.getFechaInicio() + " a " + data.getFechaFinVal())),
+                    Map.entry(ExtraDataEnum.TUTOR_NOMBRE.getTag(), new EntryValue(extraData.getNombreTutor() + " " + extraData.getApellidosTutor())),
+                    Map.entry(ExtraDataEnum.CURSO.getTag(), new EntryValue(extraData.getCurso(), false, ParagraphAlignment.CENTER))
+            );
+            var template = getClass().getResourceAsStream("/templates/ficha_de_seguimiento_periodico.docx");
+            String apellidosNombre = data.getAlumnadoApellidosNombre().replace(",", "")
+                    .replace(" ", "_");
+            String folderPath = folder.getAbsolutePath() + FileSystems.getDefault().getSeparator()
+                    + SanitizerHelper.sanitize(data.getEmpresa()) + FileSystems.getDefault().getSeparator()
+                    + WELCOME_PACK;
+            File newFolder = new File(folderPath);
+            newFolder.mkdirs();
+            File out = new File(newFolder, "SEGP_" + apellidosNombre + EXTENSION_DOCX);
+
+            TableRA tableRA = new TableRA(excelRA, 3);
+            docxPoiGenerator.generateForSeguimiento(template, replacements, tableRA, out);
         }
     }
 
@@ -185,7 +184,7 @@ public class DocxService {
                     .replace(" ", "_");
             String folderPath = folder.getAbsolutePath() + FileSystems.getDefault().getSeparator()
                     + SanitizerHelper.sanitize(data.getEmpresa()) + FileSystems.getDefault().getSeparator()
-                    + SanitizerHelper.sanitize(apellidosNombre);
+                    + WELCOME_PACK;
             File newFolder = new File(folderPath);
             newFolder.mkdirs();
             File out = new File(newFolder, "VALO_" + apellidosNombre + EXTENSION_DOCX);
@@ -194,4 +193,6 @@ public class DocxService {
             docxPoiGenerator.generateForValoracionFinal(template, replacements, tableRA, out);
         }
     }
+
+
 }

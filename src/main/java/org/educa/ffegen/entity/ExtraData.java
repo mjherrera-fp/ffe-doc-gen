@@ -11,6 +11,7 @@ public class ExtraData {
     private String telefonoTutor;
     private String curso;
     private String centro;
+    private String ciudad;
     private String telefonoCentro;
     private String emailCentro;
     private String ciclo;
