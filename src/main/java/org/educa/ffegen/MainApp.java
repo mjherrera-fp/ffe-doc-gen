@@ -11,6 +11,9 @@ public class MainApp extends Application {
 
     @Override
     public void start(Stage stage) {
+        System.setProperty("jakarta.xml.bind.context.factory",
+                "org.docx4j.jaxb.ReferenceImpl.JAXBContextFactory");
+
         WizardController controller = new WizardController(stage);
         Parent root = controller.getView();
 

@@ -15,12 +15,12 @@ if errorlevel 1 (
 echo [2/3] Creando ejecutable Windows...
 jlink ^
   --module-path "%JAVA_HOME%\jmods;C:\Program Files\Java\javafx-sdk-21.0.8\jmods" ^
-  --add-modules java.base,javafx.controls,javafx.fxml ^
+  --add-modules java.base,java.desktop,java.logging,java.naming,java.xml,javafx.controls,javafx.fxml ^
   --output runtime
 
 jpackage --type app-image ^
          --input target ^
-         --main-jar ffe-doc-gen-1.0-SNAPSHOT-jar-with-dependencies.jar ^
+         --main-jar ffe-doc-gen-1.0-SNAPSHOT.jar ^
          --main-class org.educa.ffegen.MainApp ^
          --dest dist ^
          --name "FFE-Doc-Gen" ^
