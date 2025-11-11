@@ -20,17 +20,19 @@ indirecto, incidental, especial o consecuente que pueda surgir del uso o mal fun
 
 >⚠️NOTA: La transformación de word a PDF se realiza usando transformaciones XSL-FO lo cual hace que la generación de la documentación se ralentice. Si no deseas generar los PDF, recuerda desactivar la opción en la última pantalla. Si desea crear PDFs de los documentos, prepara un cafe 🍵 y tómate la vida con paciencia
 
+- Versión v0.2.1-alpha. Versión 0.2.1-alpha de la aplicación. Funcionalidad probada de forma limitada.
+  - Se arregla problema con generación de ficheros cuando el fichero contiene un caracter que no se permite en el nombre del fichero
 - Versión v0.2.0-alpha. Versión 0.2.0-alpha de la aplicación. Funcionalidad probada de forma limitada.
-    - Generación de Calendario por alumno.
-    - Generación de Carta a la empresa.
-    - Generación de la documentación por hilos.
-    - Seleccionar si se quiere obtener en PDF, además de en word, los documentos (plan formativo y relación de alumnos)
-    - Creación de progreso por cada hilo durante la generación de la documentación.
+  - Generación de Calendario por alumno.
+  - Generación de Carta a la empresa.
+  - Generación de la documentación por hilos.
+  - Seleccionar si se quiere obtener en PDF, además de en word, los documentos (plan formativo y relación de alumnos)
+  - Creación de progreso por cada hilo durante la generación de la documentación.
 - Versión v0.1.1-alpha. Versión inicial de la aplicación. Funcionalidad probada de forma limitada.
-    - Se ha aumentado el número de RA a 30.
+  - Se ha aumentado el número de RA a 30.
 - Versión v0.1.0-alpha. Versión inicial de la aplicación. Funcionalidad probada de forma limitada.
-    - Generación de documentación para las FFE.
-    - Selección de alumnos.
+  - Generación de documentación para las FFE.
+  - Selección de alumnos.
 
 ## 📋 Requisitos
 
