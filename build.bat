@@ -13,6 +13,15 @@ if errorlevel 1 (
 )
 
 echo [2/3] Creando ejecutable Windows...
+
+:: === Eliminar carpeta runtime si existe ===
+if exist runtime (
+    echo Eliminando runtime anterior...
+    rmdir /s /q runtime
+)
+
+:: === Crear nueva imagen de runtime ===
+echo Creando runtime con jlink...
 jlink ^
   --module-path "%JAVA_HOME%\jmods;C:\Program Files\Java\javafx-sdk-21.0.8\jmods" ^
   --add-modules java.base,java.desktop,java.logging,java.naming,java.xml,javafx.controls,javafx.fxml ^
