@@ -108,8 +108,7 @@ public class DocxService {
             String apellidosNombre = data.getAlumnadoApellidosNombre().replace(",", "")
                     .replace(" ", "_");
             String folderPath = folder.getAbsolutePath() + FileSystems.getDefault().getSeparator()
-                    + SanitizerHelper.sanitize(data.getEmpresa()) + FileSystems.getDefault().getSeparator()
-                    + SanitizerHelper.sanitize(apellidosNombre);
+                    + SanitizerHelper.sanitize(data.getEmpresa());
             File newFolder = new File(folderPath);
             newFolder.mkdirs();
             File out = new File(newFolder, "PLFO_" + sanitizeFileName(apellidosNombre) + EXTENSION_DOCX);
