@@ -59,11 +59,11 @@ public class DocxService {
             File newFolder = new File(folderPath);
             newFolder.mkdirs();
             File out = new File(newFolder, "RELA_"
-                    + data.getNumeroRelacionAlumno() + EXTENSION_DOCX);
+                    + sanitizeFileName(data.getNumeroRelacionAlumno()) + EXTENSION_DOCX);
             File pdfOut = null;
             if (generatePDF) {
                 pdfOut = new File(newFolder, "RELA_"
-                        + data.getNumeroRelacionAlumno() + EXTENSION_PDF);
+                        + sanitizeFileName(data.getNumeroRelacionAlumno()) + EXTENSION_PDF);
             }
             docxPoiGenerator.generateForRelacion(template, replacements, row, out, pdfOut);
         }
@@ -112,11 +112,11 @@ public class DocxService {
                     + SanitizerHelper.sanitize(apellidosNombre);
             File newFolder = new File(folderPath);
             newFolder.mkdirs();
-            File out = new File(newFolder, "PLFO_" + apellidosNombre + EXTENSION_DOCX);
+            File out = new File(newFolder, "PLFO_" + sanitizeFileName(apellidosNombre) + EXTENSION_DOCX);
 
             File pdfOut = null;
             if (generatePDF) {
-                pdfOut = new File(newFolder, "PLFO_" + apellidosNombre + EXTENSION_PDF);
+                pdfOut = new File(newFolder, "PLFO_" + sanitizeFileName(apellidosNombre) + EXTENSION_PDF);
             }
 
             //TableRA tableRA = new TableRA(excelRA, 1);//Nº periodo
@@ -151,7 +151,7 @@ public class DocxService {
                     + WELCOME_PACK;
             File newFolder = new File(folderPath);
             newFolder.mkdirs();
-            File out = new File(newFolder, "SEGP_" + apellidosNombre + EXTENSION_DOCX);
+            File out = new File(newFolder, "SEGP_" + sanitizeFileName(apellidosNombre) + EXTENSION_DOCX);
 
             TableRA tableRA = new TableRA(excelRA, 3);
             docxPoiGenerator.generateForSeguimiento(template, replacements, tableRA, out);
@@ -187,12 +187,49 @@ public class DocxService {
                     + WELCOME_PACK;
             File newFolder = new File(folderPath);
             newFolder.mkdirs();
-            File out = new File(newFolder, "VALO_" + apellidosNombre + EXTENSION_DOCX);
+            File out = new File(newFolder, "VALO_" + sanitizeFileName(apellidosNombre) + EXTENSION_DOCX);
 
             TableRA tableRA = new TableRA(excelRA, 6);
             docxPoiGenerator.generateForValoracionFinal(template, replacements, tableRA, out);
         }
     }
+
+
+    private String sanitizeFileName(String fileName) {
+        if (fileName == null || fileName.isBlank()) {
+            return "archivo";
+        }
+
+        // Reemplazar caracteres no válidos en nombres de archivo
+        String sanitized = fileName.replaceAll("[\\\\/:*?\"<>|]", "_").trim();
+
+        // Evitar nombres reservados en Windows
+        String[] reservedNames = {
+                "CON", "PRN", "AUX", "NUL",
+                "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9",
+                "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9"
+        };
+
+        for (String reserved : reservedNames) {
+            if (sanitized.equalsIgnoreCase(reserved)) {
+                sanitized = "_" + sanitized;
+                break;
+            }
+        }
+
+        // Limitar longitud a 255 caracteres (máximo típico de sistemas de archivos)
+        if (sanitized.length() > 255) {
+            sanitized = sanitized.substring(0, 255);
+        }
+
+        // Evitar que quede vacío después del reemplazo
+        if (sanitized.isEmpty()) {
+            sanitized = "archivo";
+        }
+
+        return sanitized;
+    }
+
 
 
 }
